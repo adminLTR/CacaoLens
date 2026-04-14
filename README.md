@@ -40,6 +40,30 @@ CacaoLens/
 - **Provider**: Gestión de estado
 - **Material Design 3**: Diseño moderno
 
+## 📚 Recursos
+
+- [Docker Documentation](https://docs.docker.com/)
+- [Express.js](https://expressjs.com/)
+- [Prisma](https://www.prisma.io/docs)
+- [Flutter](https://flutter.dev/docs)
+- [TensorFlow](https://www.tensorflow.org/)
+- [FastAPI](https://fastapi.tiangolo.com/)
+
+## 🎯 Inicio Rápido
+
+### Opción 1: Script Automático (Recomendado)
+
+**Windows:**
+```bash
+start.bat
+```
+
+**Linux/Mac:**
+```bash
+chmod +x start.sh
+./start.sh
+```
+
 ## 📦 Instalación y Configuración
 
 ### Prerequisitos
