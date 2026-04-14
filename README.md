@@ -1,6 +1,14 @@
 # CacaoLens 🌱
 
-Aplicación móvil para análisis de cacao utilizando Deep Learning (CNN).
+Aplicación móvil con deep learning para la clasificación de frutos de cacao con pudrición negra, daño por pod borer y estado saludable
+
+## 👥 Autores
+
+- José Luis La Torre Romero ([AdminLTR](https://github.com/adminLTR))
+- Asthri Joanne Pardave Jara ([AsthriPardave](https://github.com/AsthriPardave))
+- Bruno Pumapillo Sarmiento ([Brun0West](https://github.com/Brun0West))
+- Diego Alonso Calderon Mathias
+- Kiltom Adolfo Paucar
 
 ## 📋 Estructura del Proyecto
 
@@ -42,7 +50,7 @@ CacaoLens/
 
 1. **Clonar el repositorio**
 ```bash
-git clone <repository-url>
+git clone https://github.com/adminLTR/CacaoLens.git
 cd CacaoLens
 ```
 
@@ -93,8 +101,9 @@ Una vez iniciados los contenedores:
 - **ML Service**: http://localhost:8000
 - **ML API Docs**: http://localhost:8000/docs
 
-## 📱 Desarrollo Local (Flutter)
+## 📱 Desarrollo Local
 
+### Frontend (Flutter)
 Para desarrollo de la app móvil sin Docker:
 
 ```bash
@@ -113,7 +122,39 @@ flutter run -d android
 flutter run -d ios
 ```
 
-## 🧠 Entrenamiento del Modelo
+### Backend (Express)
+```bash
+# Instalar dependencias
+npm install
+
+# Desarrollo
+npm run dev
+
+# Producción
+npm start
+
+# Prisma
+npm run prisma:generate
+npm run prisma:push     # Sincronizar esquema
+npm run seed            # Ejecutar seeders
+```
+
+### Backend (ML Service)
+```bash
+# Instalar dependencias
+pip install -r requirements.txt
+
+# Ejecutar API
+uvicorn src.api:app --reload --host 0.0.0.0 --port 8000
+
+# Entrenar modelo
+python src/train.py
+
+# Recargar el modelo
+curl -X POST http://localhost:8000/reload-model
+```
+
+## 🧠 Entrenamiento del Modelo con docker
 
 1. **Preparar el dataset**
 ```
@@ -140,7 +181,6 @@ curl -X POST http://localhost:8000/reload-model
 
 ## 🛠️ Comandos Útiles
 
-### Docker
 ```bash
 # Iniciar servicios
 docker-compose up -d
@@ -161,35 +201,6 @@ docker-compose exec backend sh
 docker-compose exec ml-service bash
 ```
 
-### Backend
-```bash
-# Instalar dependencias
-npm install
-
-# Desarrollo
-npm run dev
-
-# Producción
-npm start
-
-# Prisma
-npm run prisma:generate
-npm run prisma:push     # Sincronizar esquema
-npm run seed            # Ejecutar seeders
-npm run prisma:studio   # GUI para DB
-```
-
-### ML Service
-```bash
-# Instalar dependencias
-pip install -r requirements.txt
-
-# Ejecutar API
-uvicorn src.api:app --reload --host 0.0.0.0 --port 8000
-
-# Entrenar modelo
-python src/train.py
-```
 
 ## 📊 API Endpoints
 
@@ -251,7 +262,6 @@ python src/train.py
 
 ### Machine Learning
 - El modelo base usa una arquitectura CNN simple
-- Personaliza el modelo en `ML/src/train.py` según tus necesidades
 - El modelo entrenado se guarda en `ML/models/`
 
 ### Frontend
@@ -271,13 +281,3 @@ python src/train.py
 
 Este proyecto está bajo la licencia MIT.
 
-## 👥 Autores
-
-- Tu nombre aquí
-
-## 🙏 Agradecimientos
-
-- TensorFlow & Keras
-- Flutter Team
-- Prisma
-- FastAPI
