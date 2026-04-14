@@ -7,7 +7,7 @@ Aplicación móvil con deep learning para la clasificación de frutos de cacao c
 - José Luis La Torre Romero ([AdminLTR](https://github.com/adminLTR))
 - Asthri Joanne Pardave Jara ([AsthriPardave](https://github.com/AsthriPardave))
 - Bruno Pumapillo Sarmiento ([Brun0West](https://github.com/Brun0West))
-- Diego Alonso Calderon Mathias
+- Diego Alonso Calderon Mathias ([DiegoKeiO](https://github.com/DiegoKeiO))
 - Kiltom Adolfo Paucar
 
 ## 📋 Estructura del Proyecto
