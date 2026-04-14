@@ -129,20 +129,22 @@ docker-compose build
 docker-compose up -d
 ```
 
-4. **Esperar a que MySQL esté listo** (unos 10-15 segundos)
+4. **Esperar a que MySQL esté listo** (unos 15 segundos)
 ```bash
 docker-compose logs mysql
 ```
 
-5. **Ejecutar migraciones de base de datos**
-```bash
-docker-compose exec backend npx prisma generate
-docker-compose exec backend npx prisma migrate deploy
-```
+5. **Verificar que todo está funcionando**
 
-6. **Verificar que todo está funcionando**
+El backend se encargará automáticamente de:
+- ✅ Generar Prisma Client
+- ✅ Sincronizar el esquema (db push)
+- ✅ Ejecutar seeders (si hay datos configurados)
+- ✅ Iniciar el servidor
+
 ```bash
 docker-compose ps
+docker-compose logs backend  # Ver el proceso de inicio
 ```
 
 ## 🌐 Acceder a los Servicios

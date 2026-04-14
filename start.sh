@@ -29,13 +29,7 @@ docker-compose up -d
 
 echo ""
 echo "⏳ Waiting for services to be ready..."
-sleep 10
-
-# Run Prisma migrations
-echo ""
-echo "📊 Running database migrations..."
-docker-compose exec -T backend npx prisma generate
-docker-compose exec -T backend npx prisma migrate deploy
+sleep 15
 
 echo ""
 echo "✅ Setup complete!"

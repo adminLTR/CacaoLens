@@ -44,7 +44,6 @@ services:
         condition: service_started
     networks:
       - cacaolens-network
-    command: sh -c "npx prisma generate && npx prisma migrate deploy && npm start"
 
   # ML Service (FastAPI + TensorFlow)
   ml-service:

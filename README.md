@@ -70,12 +70,18 @@ docker-compose logs -f
 ```
 
 4. **Inicializar la base de datos**
-```bash
-# Ejecutar migraciones de Prisma
-docker-compose exec backend npx prisma migrate dev
 
-# (Opcional) Seed data
-docker-compose exec backend npx prisma db seed
+El backend se encarga automáticamente de:
+- ✅ Generar el cliente de Prisma
+- ✅ Sincronizar el esquema con `prisma db push`
+- ✅ Ejecutar seeders con datos iniciales (upsert)
+
+Esto ocurre en cada inicio del backend gracias al `entrypoint.sh`.
+
+Para agregar datos de prueba, edita `backend/prisma/seed.js`:
+```bash
+# Ver logs del proceso de seeding
+docker-compose logs backend
 ```
 
 ## 🌐 Acceso a los Servicios
@@ -168,8 +174,9 @@ npm start
 
 # Prisma
 npm run prisma:generate
-npm run prisma:migrate
-npm run prisma:studio
+npm run prisma:push     # Sincronizar esquema
+npm run seed            # Ejecutar seeders
+npm run prisma:studio   # GUI para DB
 ```
 
 ### ML Service

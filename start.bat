@@ -28,13 +28,7 @@ docker-compose up -d
 
 echo.
 echo ⏳ Waiting for services to be ready...
-timeout /t 10 /nobreak > nul
-
-REM Run Prisma migrations
-echo.
-echo 📊 Running database migrations...
-docker-compose exec -T backend npx prisma generate
-docker-compose exec -T backend npx prisma migrate deploy
+timeout /t 15 /nobreak > nul
 
 echo.
 echo ✅ Setup complete!

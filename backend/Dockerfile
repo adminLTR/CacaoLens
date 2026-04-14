@@ -2,6 +2,9 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+# Install netcat for health checks
+RUN apk add --no-cache netcat-openbsd
+
 # Copy package files
 COPY package*.json ./
 
@@ -11,8 +14,11 @@ RUN npm install
 # Copy prisma schema
 COPY prisma ./prisma/
 
-# Generate Prisma Client
-RUN npx prisma generate
+# Copy entrypoint script
+COPY entrypoint.sh ./
+
+# Make entrypoint executable
+RUN chmod +x entrypoint.sh
 
 # Copy application files
 COPY . .
@@ -22,4 +28,5 @@ RUN mkdir -p uploads
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+# Use entrypoint script
+ENTRYPOINT ["./entrypoint.sh"]
