@@ -1,0 +1,27 @@
+# Deep Learning Framework
+tensorflow==2.15.0
+keras==2.15.0
+
+# Computer Vision
+opencv-python==4.9.0.80
+pillow==10.2.0
+
+# Data Processing
+numpy==1.26.4
+pandas==2.2.1
+
+# Image Augmentation
+albumentations==1.4.0
+
+# Visualization
+matplotlib==3.8.3
+seaborn==0.13.2
+
+# API Framework
+fastapi==0.110.0
+uvicorn==0.27.1
+python-multipart==0.0.9
+
+# Utilities
+scikit-learn==1.4.1.post1
+python-dotenv==1.0.1

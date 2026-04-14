@@ -1,0 +1,39 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Cacao {
+  id          Int        @id @default(autoincrement())
+  name        String
+  variety     String?
+  origin      String?
+  description String?    @db.Text
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  analyses    Analysis[]
+
+  @@map("cacao")
+}
+
+model Analysis {
+  id         Int      @id @default(autoincrement())
+  cacaoId    Int?
+  imagePath  String
+  prediction String
+  confidence Float
+  metadata   Json?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  cacao Cacao? @relation(fields: [cacaoId], references: [id], onDelete: SetNull)
+
+  @@map("analysis")
+}

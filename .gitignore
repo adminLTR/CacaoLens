@@ -1,0 +1,53 @@
+# Environment files
+.env
+backend/.env
+ML/.env
+frontend/.env
+
+# Node
+node_modules/
+npm-debug.log
+backend/node_modules/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+ML/venv/
+ML/env/
+ML/.venv
+
+# Flutter
+frontend/.dart_tool/
+frontend/.packages
+frontend/.pub/
+frontend/build/
+
+# Database
+*.sqlite
+*.db
+
+# Docker
+docker-compose.override.yml
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Uploads & Data
+backend/uploads/*
+!backend/uploads/.gitkeep
+ML/data/*
+!ML/data/.gitkeep
+ML/models/*.h5
+ML/models/*.pb
+!ML/models/.gitkeep
+
+# Logs
+*.log
+logs/

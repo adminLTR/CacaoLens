@@ -1,0 +1,16 @@
+*.iml
+.gradle/
+.idea/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+.env
+*.log
+*.swp
+.DS_Store
+.vscode/
+coverage/
