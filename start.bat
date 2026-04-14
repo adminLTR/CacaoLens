@@ -18,6 +18,9 @@ if not exist .env (
     echo.
 )
 
+echo 🐳 Down Docker containers...
+docker-compose down
+
 REM Build and start Docker containers
 echo 🐳 Building Docker containers...
 docker-compose build
