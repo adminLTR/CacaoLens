@@ -19,6 +19,9 @@ else
     echo ""
 fi
 
+echo "🐳 Down Docker containers..."
+docker-compose down
+
 # Build and start Docker containers
 echo "🐳 Building Docker containers..."
 docker-compose build
