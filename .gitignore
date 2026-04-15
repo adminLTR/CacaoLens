@@ -48,6 +48,10 @@ ML/models/*.h5
 ML/models/*.pb
 !ML/models/.gitkeep
 
+# APK Output
+apk-output/
+*.apk
+
 # Logs
 *.log
 logs/

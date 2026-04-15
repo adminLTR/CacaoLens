@@ -37,7 +37,6 @@ echo.
 echo ✅ Setup complete!
 echo.
 echo 📱 Access your services:
-echo   - Frontend:  http://localhost:80
 echo   - Backend:   http://localhost:3000
 echo   - ML API:    http://localhost:8000
 echo   - ML Docs:   http://localhost:8000/docs

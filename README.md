@@ -120,10 +120,38 @@ docker-compose logs backend
 
 Una vez iniciados los contenedores:
 
-- **Frontend**: http://localhost:80
 - **Backend API**: http://localhost:3000
 - **ML Service**: http://localhost:8000
 - **ML API Docs**: http://localhost:8000/docs
+- **MySQL**: localhost:3306
+
+**⚠️ Nota sobre el Frontend:**  
+El frontend de Flutter es una **aplicación móvil nativa (APK)** que se compila con Docker pero **no se ejecuta como servicio web**. Para usarla, debes compilar e instalar el APK en un dispositivo Android o emulador.
+
+### 📱 Compilar e Instalar la App Móvil
+
+**Compilación rápida del APK:**
+```powershell
+# Windows
+.\build-apk.ps1
+```
+
+```bash
+# Linux/Mac (crear script similar o usar comandos manuales)
+docker-compose build frontend
+```
+
+**El APK compilado estará en:** `apk-output/cacaolens.apk`
+
+**Instalación:**
+```bash
+# Con ADB (dispositivo conectado por USB)
+adb install apk-output/cacaolens.apk
+
+# O transfiere el archivo APK manualmente a tu dispositivo
+```
+
+📖 **Documentación completa**: Ver [BUILD-APK.md](BUILD-APK.md) para instrucciones detalladas
 
 ## 📱 Desarrollo Local
 
