@@ -1,18 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'screens/home_screen.dart';
-import 'screens/analysis_screen.dart';
-import 'screens/history_screen.dart';
-import 'providers/cacao_provider.dart';
-import 'providers/analysis_provider.dart';
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  
-  // Load environment variables
-  await dotenv.load(fileName: ".env");
-  
+void main() {
   runApp(const MyApp());
 }
 
@@ -21,35 +9,33 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => CacaoProvider()),
-        ChangeNotifierProvider(create: (_) => AnalysisProvider()),
-      ],
-      child: MaterialApp(
-        title: 'CacaoLens',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF6B4423),
-            brightness: Brightness.light,
-          ),
-          useMaterial3: true,
+    return MaterialApp(
+      title: 'CacaoLens',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.brown),
+        useMaterial3: true,
+      ),
+      home: const HomeScreen(),
+    );
+  }
+}
+
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('CacaoLens'),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+      ),
+      body: const Center(
+        child: Text(
+          '¡Hola Mundo!',
+          style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
         ),
-        darkTheme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF6B4423),
-            brightness: Brightness.dark,
-          ),
-          useMaterial3: true,
-        ),
-        themeMode: ThemeMode.system,
-        initialRoute: '/',
-        routes: {
-          '/': (context) => const HomeScreen(),
-          '/analysis': (context) => const AnalysisScreen(),
-          '/history': (context) => const HistoryScreen(),
-        },
       ),
     );
   }

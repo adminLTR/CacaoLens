@@ -2,8 +2,8 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Install netcat for health checks
-RUN apk add --no-cache netcat-openbsd
+# Install netcat for health checks and OpenSSL for Prisma
+RUN apk add --no-cache netcat-openbsd openssl openssl-dev
 
 # Copy package files
 COPY package*.json ./

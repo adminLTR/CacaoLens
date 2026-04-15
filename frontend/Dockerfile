@@ -5,14 +5,19 @@ WORKDIR /app
 # Copy pubspec files
 COPY pubspec.* ./
 
+# Create a minimal Flutter web project structure
+RUN flutter create . --platforms web --project-name cacaolens
+
 # Get dependencies
 RUN flutter pub get
 
-# Copy the rest of the application
+# Copy the application files (this will override the generated files)
 COPY . .
 
-# Build web version (or APK for mobile)
-# For web:
+# Get dependencies again after copying
+RUN flutter pub get
+
+# Build web version
 RUN flutter build web --release
 
 # For a simple serving solution
