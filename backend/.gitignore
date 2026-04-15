@@ -8,3 +8,4 @@ uploads/*
 .vscode/
 coverage/
 dist/
+uploads/

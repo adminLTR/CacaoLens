@@ -14,62 +14,7 @@ const prisma = new PrismaClient();
  * - Datos de demostración
  */
 
-async function seedCacao() {
-  console.log('📦 Seeding Cacao data...');
-  
-  // Ejemplo de cómo hacer upsert (descomenta cuando necesites usar)
-  /*
-  await prisma.cacao.upsert({
-    where: { id: 1 },
-    update: {},
-    create: {
-      id: 1,
-      name: 'Cacao Criollo',
-      variety: 'Criollo',
-      origin: 'Ecuador',
-      description: 'Cacao de alta calidad con notas florales y afrutadas'
-    }
-  });
 
-  await prisma.cacao.upsert({
-    where: { id: 2 },
-    update: {},
-    create: {
-      id: 2,
-      name: 'Cacao Forastero',
-      variety: 'Forastero',
-      origin: 'Brasil',
-      description: 'Variedad más común, resistente y de sabor intenso'
-    }
-  });
-  */
-
-  console.log('   ✅ Cacao seeding complete (no data yet)');
-}
-
-async function seedAnalysis() {
-  console.log('📦 Seeding Analysis data...');
-  
-  // Ejemplo de análisis de prueba (descomenta cuando necesites usar)
-  /*
-  await prisma.analysis.upsert({
-    where: { id: 1 },
-    update: {},
-    create: {
-      id: 1,
-      imagePath: '/uploads/sample.jpg',
-      prediction: 'Alta Calidad',
-      confidence: 0.95,
-      metadata: {
-        model_version: '1.0.0',
-        processing_time: 1.2
-      }
-    }
-  });
-  */
-
-  console.log('   ✅ Analysis seeding complete (no data yet)');
-}
 
 async function main() {
   console.log('🌱 Starting database seeding...');
@@ -77,8 +22,7 @@ async function main() {
 
   try {
     // Ejecutar seeders en orden
-    await seedCacao();
-    await seedAnalysis();
+    
 
     console.log('================================');
     console.log('✅ All seeders completed successfully!');
