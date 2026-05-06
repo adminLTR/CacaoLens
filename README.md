@@ -14,11 +14,13 @@ Aplicación móvil con deep learning para la clasificación de frutos de cacao c
 
 ```
 CacaoLens/
-├── backend/          # API REST con ExpressJS + Prisma + MySQL
-├── ML/               # Servicio ML con FastAPI + TensorFlow/Keras
-├── frontend/         # Aplicación Flutter
+├── frontend/           # Aplicación Flutter
+├── backend/
+│   ├── backend/       # API REST con ExpressJS + Prisma + MySQL
+│   └── ML-service/    # Servicio ML Flask para predicciones
+├── ML/                # Código de entrenamiento del modelo
 ├── docker-compose.yml
-└── .env.example
+└── start.bat/start.sh # Scripts de inicio rápido
 ```
 
 ## 🚀 Tecnologías
@@ -30,10 +32,10 @@ CacaoLens/
 - **Arquitectura MVC**: Separación de responsabilidades
 
 ### Machine Learning
+- **Flask**: API ligera para Python
 - **TensorFlow/Keras**: Framework de Deep Learning
-- **FastAPI**: API moderna y rápida para Python
 - **OpenCV**: Procesamiento de imágenes
-- **CNN**: Redes Neuronales Convolucionales
+- **InceptionV3**: Modelo CNN pre-entrenado
 
 ### Frontend
 - **Flutter**: Framework multiplataforma
@@ -82,7 +84,8 @@ cd CacaoLens
 ```bash
 # Copiar archivos de ejemplo
 cp .env.example .env
-cp backend/.env.example backend/.env
+cp backend/backend/.env.example backend/backend/.env
+cp backend/ML-service/.env.example backend/ML-service/.env
 cp ML/.env.example ML/.env
 cp frontend/.env.example frontend/.env
 

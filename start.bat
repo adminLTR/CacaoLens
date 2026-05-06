@@ -7,7 +7,8 @@ REM Check if .env files exist
 if not exist .env (
     echo 📝 Creating .env files from examples...
     copy .env.example .env
-    copy backend\.env.example backend\.env
+    copy backend\backend\.env.example backend\backend\.env
+    copy backend\ML-service\.env.example backend\ML-service\.env
     copy ML\.env.example ML\.env
     copy frontend\.env.example frontend\.env
     echo ✅ Environment files created!

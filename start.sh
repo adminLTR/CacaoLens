@@ -8,7 +8,8 @@ echo ""
 if [ ! -f .env ]; then
     echo "📝 Creating .env files from examples..."
     cp .env.example .env
-    cp backend/.env.example backend/.env
+    cp backend/backend/.env.example backend/backend/.env
+    cp backend/ML-service/.env.example backend/ML-service/.env
     cp ML/.env.example ML/.env
     cp frontend/.env.example frontend/.env
     echo "✅ Environment files created!"

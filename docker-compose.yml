@@ -25,16 +25,16 @@ services:
   # Backend API (ExpressJS + Prisma)
   backend:
     build:
-      context: ./backend
+      context: ./backend/backend
       dockerfile: Dockerfile
     container_name: cacaolens-backend
     restart: unless-stopped
     env_file:
-      - ./backend/.env
+      - ./backend/backend/.env
     ports:
       - "${BACKEND_PORT}:3000"
     volumes:
-      - ./backend:/app
+      - ./backend/backend:/app
       - /app/node_modules
       - backend_uploads:/app/uploads
     depends_on:
@@ -45,19 +45,19 @@ services:
     networks:
       - cacaolens-network
 
-  # ML Service (FastAPI + TensorFlow)
+  # ML Service (Flask + TensorFlow)
   ml-service:
     build:
-      context: ./ML
+      context: ./backend/ML-service
       dockerfile: Dockerfile
     container_name: cacaolens-ml
     restart: unless-stopped
     env_file:
-      - ./ML/.env
+      - ./backend/ML-service/.env
     ports:
       - "${ML_PORT}:8000"
     volumes:
-      - ./ML:/app
+      - ./backend/ML-service:/app
       - ml_models:/app/models
       - ml_data:/app/data
     networks:
