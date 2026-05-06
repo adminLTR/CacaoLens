@@ -1,0 +1,22 @@
+# Backend Services - .gitignore
+
+# Este .gitignore aplica a todo el directorio backend/
+# Los subdirectorios tienen sus propios .gitignore específicos
+
+# Environment files
+**/.env
+**/.env.local
+**/.env.*.local
+
+# Dependencies
+**/node_modules/
+**/venv/
+**/env/
+**/.venv/
+
+# Logs
+**/*.log
+
+# OS files
+.DS_Store
+Thumbs.db

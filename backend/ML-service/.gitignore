@@ -1,0 +1,92 @@
+# ========================================
+# Python Environment
+# ========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.pyc
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+.env/
+
+# ========================================
+# Environment Variables - NUNCA SUBIR
+# ========================================
+.env
+.env.local
+.env.*.local
+
+# ========================================
+# Modelos ML - IMPORTANTE: No subir (muy pesados)
+# ========================================
+models/*.h5
+models/*.keras
+models/*.pb
+models/*.pth
+models/*.pt
+models/*.ckpt
+models/*.weights
+models/*.weights.h5
+models/*.tflite
+models/*.onnx
+!models/.gitkeep
+!models/README.md
+
+# ========================================
+# Datos & Uploads
+# ========================================
+data/
+uploads/
+prueba.jpg
+test_images/
+*.jpg
+*.jpeg
+*.png
+*.gif
+!static/**/*.jpg
+!static/**/*.jpeg
+!static/**/*.png
+
+# ========================================
+# Jupyter Notebooks
+# ========================================
+.ipynb_checkpoints/
+*.ipynb_checkpoints/
+
+# ========================================
+# Logs
+# ========================================
+*.log
+logs/
+
+# ========================================
+# IDE & Editors
+# ========================================
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ========================================
+# Testing & Coverage
+# ========================================
+.pytest_cache/
+.coverage
+htmlcov/
+coverage/
+
+# ========================================
+# Temporary files
+# ========================================
+*.tmp
+*.temp
+*.bak
+.cache/

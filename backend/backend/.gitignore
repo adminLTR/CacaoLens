@@ -1,11 +1,68 @@
+# ========================================
+# Node.js Backend Dependencies
+# ========================================
 node_modules/
-npm-debug.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# ========================================
+# Environment Variables - NUNCA SUBIR
+# ========================================
 .env
-.DS_Store
+.env.local
+.env.*.local
+
+# ========================================
+# Build & Output
+# ========================================
+dist/
+build/
+coverage/
+.nyc_output/
+
+# ========================================
+# Logs
+# ========================================
+*.log
+logs/
+
+# ========================================
+# Uploads & User Content
+# ========================================
 uploads/*
 !uploads/.gitkeep
-*.log
+
+# ========================================
+# Database
+# ========================================
+*.sqlite
+*.sqlite3
+*.db
+prisma/*.db
+prisma/*.db-journal
+
+# ========================================
+# IDE & Editors
+# ========================================
 .vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ========================================
+# Testing
+# ========================================
 coverage/
-dist/
-uploads/
+.nyc_output/
+test-results/
+
+# ========================================
+# Temporary files
+# ========================================
+*.tmp
+*.temp
+*.bak

@@ -1,57 +1,165 @@
-# Environment files
+# ========================================
+# Environment files - Nunca subir al repo
+# ========================================
 .env
-backend/.env
+.env.local
+.env.*.local
+backend/backend/.env
+backend/ML-service/.env
 ML/.env
 frontend/.env
 
-# Node
+# ========================================
+# Node.js (Backend)
+# ========================================
 node_modules/
-npm-debug.log
-backend/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+backend/backend/node_modules/
+backend/backend/npm-debug.log*
+backend/backend/dist/
+backend/backend/coverage/
 
-# Python
+# ========================================
+# Python (ML)
+# ========================================
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
+*.pyc
+venv/
+env/
+ENV/
+.venv/
 ML/venv/
 ML/env/
-ML/.venv
+ML/.venv/
+backend/ML-service/venv/
+backend/ML-service/env/
+backend/ML-service/.venv/
+*.ipynb_checkpoints/
 
-# Flutter
+# ========================================
+# Flutter (Frontend)
+# ========================================
 frontend/.dart_tool/
 frontend/.packages
 frontend/.pub/
+frontend/.pub-cache/
+frontend/.flutter-plugins
+frontend/.flutter-plugins-dependencies
 frontend/build/
+frontend/.metadata
 
+# ========================================
+# Modelos de ML - IMPORTANTE: No subir
+# ========================================
+# Modelos entrenados (suelen ser muy pesados)
+*.h5
+*.keras
+*.pb
+*.pth
+*.pt
+*.ckpt
+*.weights
+*.weights.h5
+*.tflite
+ML/models/*.h5
+ML/models/*.keras
+ML/models/*.pb
+ML/models/*.pth
+backend/ML-service/models/*.h5
+backend/ML-service/models/*.keras
+backend/ML-service/models/*.pb
+!ML/models/.gitkeep
+!backend/ML-service/models/.gitkeep
+
+# Datos de entrenamiento (pueden ser pesados)
+ML/data/*
+!ML/data/.gitkeep
+!ML/data/README.md
+
+# ========================================
 # Database
+# ========================================
 *.sqlite
+*.sqlite3
 *.db
+*.sql
+*.dump
+mysql_data/
 
+# ========================================
 # Docker
+# ========================================
 docker-compose.override.yml
+*.dockerfile.swp
 
-# IDE
+# ========================================
+# IDE & Editors
+# ========================================
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
 .DS_Store
+Thumbs.db
 
-# Uploads & Data
-backend/uploads/*
-!backend/uploads/.gitkeep
-ML/data/*
-!ML/data/.gitkeep
-ML/models/*.h5
-ML/models/*.pb
-!ML/models/.gitkeep
+# ========================================
+# Uploads & User Content
+# ========================================
+backend/backend/uploads/*
+!backend/backend/uploads/.gitkeep
+backend/ML-service/uploads/*
+!backend/ML-service/uploads/.gitkeep
+uploads/
+prueba.jpg
+*.jpg
+*.jpeg
+*.png
+*.gif
+!assets/**/*.jpg
+!assets/**/*.jpeg
+!assets/**/*.png
+!assets/**/*.gif
 
-# APK Output
+# ========================================
+# Build & Output
+# ========================================
+dist/
+build/
+out/
 apk-output/
 *.apk
+*.ipa
+*.aab
 
+# ========================================
 # Logs
+# ========================================
 *.log
 logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ========================================
+# Testing
+# ========================================
+coverage/
+.nyc_output/
+test-results/
+
+# ========================================
+# Temporary files
+# ========================================
+*.tmp
+*.temp
+*.bak
+*.swp
+.cache/

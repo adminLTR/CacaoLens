@@ -1,20 +1,101 @@
+# ========================================
+# Python Environment
+# ========================================
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
+*.pyc
+
+# Virtual environments
 venv/
 env/
 ENV/
-.venv
+.venv/
+.env/
+
+# ========================================
+# Environment Variables
+# ========================================
+.env
+.env.local
+.env.*.local
+
+# ========================================
+# Modelos Entrenados - IMPORTANTE: No subir
+# ========================================
+# Estos archivos son muy pesados (varios GB)
 models/*.h5
+models/*.keras
 models/*.pb
-data/
+models/*.pth
+models/*.pt
+models/*.ckpt
+models/*.weights.h5
+models/*.tflite
+models/*.onnx
+models/*.pkl
+models/*.joblib
+!models/.gitkeep
+!models/README.md
+
+# ========================================
+# Datasets & Data
+# ========================================
+data/*
 !data/.gitkeep
+!data/README.md
+datasets/
+raw_data/
+processed_data/
+
+# ========================================
+# Training Outputs
+# ========================================
+checkpoints/
+logs/
+tensorboard_logs/
+runs/
+outputs/
+
+# ========================================
+# Jupyter Notebooks
+# ========================================
+.ipynb_checkpoints/
+*.ipynb_checkpoints/
+
+# ========================================
+# Uploads & Test Images
+# ========================================
 uploads/
 !uploads/.gitkeep
+test_images/
+*.jpg
+*.jpeg
+*.png
+*.gif
+!examples/**/*.jpg
+!examples/**/*.png
+
+# ========================================
+# Logs
+# ========================================
 *.log
-.env
+
+# ========================================
+# IDE & Editors
+# ========================================
 .DS_Store
-.ipynb_checkpoints/
-*.weights.h5
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ========================================
+# Testing & Coverage
+# ========================================
+.pytest_cache/
+.coverage
+htmlcov/
+
