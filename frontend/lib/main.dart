@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import 'providers/analysis_provider.dart';
 import 'routes.dart';
 import 'screens/camera_screen.dart';
 import 'screens/history_screen.dart';
@@ -14,7 +16,14 @@ import 'screens/settings_screen.dart';
 import 'theme/app_theme.dart';
 
 void main() {
-  runApp(const CacaoLensApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AnalysisProvider()),
+      ],
+      child: const CacaoLensApp(),
+    ),
+  );
 }
 
 class CacaoLensApp extends StatelessWidget {

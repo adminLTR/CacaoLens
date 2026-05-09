@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
 
+import '../providers/analysis_provider.dart';
 import '../routes.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
@@ -7,6 +10,15 @@ import '../widgets/app_scaffold.dart';
 
 class CameraScreen extends StatelessWidget {
   const CameraScreen({super.key});
+
+  Future<void> _handleImageSelection(BuildContext context, ImageSource source) async {
+    final provider = Provider.of<AnalysisProvider>(context, listen: false);
+    await provider.pickImage(source);
+    
+    if (provider.selectedImage != null && context.mounted) {
+      Navigator.of(context).pushReplacementNamed(AppRoutes.result);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,10 +78,11 @@ class CameraScreen extends StatelessWidget {
                   children: [
                     _CircleIcon(
                       icon: Icons.image,
-                      onTap: () => Navigator.of(context).pushNamed(AppRoutes.preview),
+                      onTap: () => _handleImageSelection(context, ImageSource.gallery),
                     ),
                     _CircleCapture(
-                      onTap: () => Navigator.of(context).pushNamed(AppRoutes.preview),
+                      // Llama a la cámara nativa
+                      onTap: () => _handleImageSelection(context, ImageSource.camera),
                     ),
                     _CircleIcon(
                       icon: Icons.sync,
