@@ -60,9 +60,10 @@ class AnalysisProvider extends ChangeNotifier {
       await _callBackendAPI();
     }
     
-
+    /*
     print("🧠 Forzando modelo offline...");
     await _runLocalInference();
+    */
 
     _isLoading = false;
     notifyListeners();
