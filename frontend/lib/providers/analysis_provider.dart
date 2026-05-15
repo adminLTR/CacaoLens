@@ -50,8 +50,8 @@ class AnalysisProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    var connectivityResult = await (Connectivity().checkConnectivity());
     
+    var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.none) {
       print("📱 Modo Offline detectado. Usando modelo embebido...");
       await _runLocalInference();
@@ -59,6 +59,10 @@ class AnalysisProvider extends ChangeNotifier {
       print("🌐 Conexión detectada. Enviando a la API...");
       await _callBackendAPI();
     }
+    
+
+    print("🧠 Forzando modelo offline...");
+    await _runLocalInference();
 
     _isLoading = false;
     notifyListeners();
@@ -80,7 +84,8 @@ class AnalysisProvider extends ChangeNotifier {
       }
 
       img.Image resizedImage = img.copyResize(originalImage, width: 224, height: 224);
-      var input = _imageToByteListFloat32(resizedImage, 224);
+      // var input = _imageToByteListFloat32(resizedImage, 224);
+      var input = _imageToMatrix(resizedImage, 224);
       var output = List.generate(1, (index) => List.filled(3, 0.0));
       _interpreter!.run(input, output);
 
@@ -103,19 +108,24 @@ class AnalysisProvider extends ChangeNotifier {
     }
   }
 
-  Float32List _imageToByteListFloat32(img.Image image, int inputSize) {
-    var convertedBytes = Float32List(1 * inputSize * inputSize * 3);
-    var buffer = Float32List.view(convertedBytes.buffer);
-    int pixelIndex = 0;
-    for (var i = 0; i < inputSize; i++) {
-      for (var j = 0; j < inputSize; j++) {
-        var pixel = image.getPixel(j, i);
-        buffer[pixelIndex++] = pixel.r / 255.0;
-        buffer[pixelIndex++] = pixel.g / 255.0;
-        buffer[pixelIndex++] = pixel.b / 255.0;
+  List _imageToMatrix(img.Image image, int inputSize) {
+    var matrix = List.generate(1, (_) =>
+      List.generate(inputSize, (y) =>
+        List.generate(inputSize, (x) =>
+          List.filled(3, 0.0)
+        )
+      )
+    );
+
+    for (int y = 0; y < inputSize; y++) {
+      for (int x = 0; x < inputSize; x++) {
+        var pixel = image.getPixel(x, y);
+        matrix[0][y][x][0] = pixel.r / 255.0;
+        matrix[0][y][x][1] = pixel.g / 255.0;
+        matrix[0][y][x][2] = pixel.b / 255.0;
       }
     }
-    return convertedBytes;
+    return matrix;
   }
 
   Future<void> _callBackendAPI() async {
