@@ -12,12 +12,12 @@ class AppDrawer extends StatelessWidget {
       backgroundColor: AppColors.cream,
       child: ListView(
         padding: EdgeInsets.zero,
-        children: [
+        children: const [
           DrawerHeader(
-            decoration: const BoxDecoration(color: AppColors.brown),
+            decoration: BoxDecoration(color: AppColors.brown),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 Icon(Icons.coffee, color: AppColors.white, size: 36),
                 SizedBox(height: 12),
                 Text(
