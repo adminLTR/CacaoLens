@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../providers/analysis_provider.dart';
 import '../routes.dart';
@@ -9,8 +10,35 @@ import '../widgets/app_button.dart';
 import '../widgets/app_logo.dart';
 import '../widgets/app_scaffold.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  String _displayName = 'Usuario';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedName = prefs.getString('user_name');
+    final fallbackEmail = prefs.getString('user_email');
+    final nextName = (savedName != null && savedName.trim().isNotEmpty)
+        ? savedName.trim()
+        : (fallbackEmail != null && fallbackEmail.trim().isNotEmpty)
+            ? fallbackEmail.trim()
+            : 'Usuario';
+
+    if (!mounted) return;
+    setState(() => _displayName = nextName);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +53,7 @@ class HomeScreen extends StatelessWidget {
           children: [
             const AppLogo(size: 110),
             const SizedBox(height: 16),
-            Text('Bienvenido, Usuario123!', style: AppTextStyles.titleMedium),
+            Text('Bienvenido, $_displayName!', style: AppTextStyles.titleMedium),
             const SizedBox(height: 12),
             Text(
               'Selecciona una imagen de cacao para empezar con la clasificacion',

@@ -53,7 +53,6 @@ flutter:
     - .env
     - assets/images/
     - assets/icons/
-    - assets/models/Cacao_InceptionV3_best.tflite
 
   # fonts:
   #   - family: Schyler

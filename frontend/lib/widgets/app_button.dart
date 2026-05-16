@@ -15,7 +15,7 @@ class AppButton extends StatelessWidget {
 
   factory AppButton.primary({
     required String label,
-    required VoidCallback onPressed,
+    VoidCallback? onPressed,
     double? width,
   }) {
     return AppButton(
@@ -28,7 +28,7 @@ class AppButton extends StatelessWidget {
 
   factory AppButton.secondary({
     required String label,
-    required VoidCallback onPressed,
+    VoidCallback? onPressed,
     double? width,
   }) {
     return AppButton(
@@ -41,7 +41,7 @@ class AppButton extends StatelessWidget {
 
   factory AppButton.neutral({
     required String label,
-    required VoidCallback onPressed,
+    VoidCallback? onPressed,
     double? width,
   }) {
     return AppButton(
@@ -54,7 +54,7 @@ class AppButton extends StatelessWidget {
 
   factory AppButton.danger({
     required String label,
-    required VoidCallback onPressed,
+    VoidCallback? onPressed,
     double? width,
   }) {
     return AppButton(
@@ -66,7 +66,7 @@ class AppButton extends StatelessWidget {
   }
 
   final String label;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final Color backgroundColor;
   final Color textColor;
   final double? width;
