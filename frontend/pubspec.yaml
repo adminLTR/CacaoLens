@@ -18,11 +18,11 @@ dependencies:
   provider: ^6.1.2
   
   # HTTP & API
-  http: ^1.2.1
+  http: ^1.6.0
   dio: ^5.4.1
   
   # Image Handling
-  image_picker: ^1.0.7
+  image_picker: ^1.2.2
   cached_network_image: ^3.3.1
   
   # Storage
@@ -35,6 +35,9 @@ dependencies:
   # Utils
   intl: ^0.19.0
   logger: ^2.1.0
+  tflite_flutter: ^0.12.1
+  connectivity_plus: ^7.1.1
+  image: ^4.8.0
 
 dev_dependencies:
   flutter_test:
@@ -48,6 +51,7 @@ flutter:
     - .env
     - assets/images/
     - assets/icons/
+    - assets/models/Cacao_InceptionV3_best.tflite
 
   # fonts:
   #   - family: Schyler
