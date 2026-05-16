@@ -155,6 +155,10 @@ const updateProfile = async (req, res) => {
   try {
     const { nombre, apellidos, fechaNac, correo } = req.body;
 
+    if (!nombre && !apellidos && !fechaNac && !correo) {
+      return res.status(400).json({ error: 'Debe proporcionar al menos un campo para actualizar' });
+    }
+
     if (correo) {
       const correoExistente = await prisma.usuario.findFirst({
         where: {
