@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
 
+import '../providers/analysis_provider.dart';
 import '../routes.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/app_button.dart';
@@ -11,6 +14,8 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final analysisProvider = Provider.of<AnalysisProvider>(context, listen: false);
+
     return AppScaffold(
       showMenu: true,
       title: const Text('CacaoLens'),
@@ -30,12 +35,22 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 24),
             AppButton.primary(
               label: 'Usar camara',
-              onPressed: () => Navigator.of(context).pushNamed(AppRoutes.camera),
+              onPressed: () async {
+                await analysisProvider.pickImage(ImageSource.camera);
+                if (analysisProvider.selectedImage != null && context.mounted) {
+                  Navigator.of(context).pushNamed(AppRoutes.result);
+                }
+              },
             ),
             const SizedBox(height: 12),
             AppButton.secondary(
               label: 'Abrir galeria',
-              onPressed: () => Navigator.of(context).pushNamed(AppRoutes.preview),
+              onPressed: () async {
+                await analysisProvider.pickImage(ImageSource.gallery);
+                if (analysisProvider.selectedImage != null && context.mounted) {
+                  Navigator.of(context).pushNamed(AppRoutes.result);
+                }
+              },
             ),
           ],
         ),

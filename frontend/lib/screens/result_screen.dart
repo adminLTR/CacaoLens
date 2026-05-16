@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../providers/analysis_provider.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/app_button.dart';
@@ -46,33 +48,25 @@ class ResultScreen extends StatelessWidget {
                 children: [
                   Container(
                     height: 140,
-                    width: double.infinity,
                     decoration: BoxDecoration(
                       color: AppColors.white,
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: imagePath != null
-                        ? (kIsWeb 
-                            ? Image.network(imagePath, fit: BoxFit.cover) 
-                            : Image.file(File(imagePath), fit: BoxFit.cover))
-                        : const Center(
-                            child: Icon(Icons.image, size: 72, color: AppColors.grayDark),
-                          ),
+                    child: const Center(
+                      child: Icon(Icons.image, size: 72, color: AppColors.grayDark),
                     ),
                   ),
                   const SizedBox(height: 18),
-                  Text(prediccion.toUpperCase(), style: AppTextStyles.titleLarge.copyWith(color: resultColor)),
+                  Text('SALUDABLE', style: AppTextStyles.titleLarge.copyWith(color: AppColors.green)),
                   const SizedBox(height: 6),
-                  Text('Confianza: $confianzaTexto%', style: AppTextStyles.body),
+                  Text('Confianza: 96.5%', style: AppTextStyles.body),
                   const SizedBox(height: 16),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(20),
                     child: LinearProgressIndicator(
-                      value: progressValue,
+                      value: 0.965,
                       minHeight: 14,
-                      color: resultColor,
+                      color: AppColors.green,
                       backgroundColor: AppColors.gray,
                     ),
                   ),
