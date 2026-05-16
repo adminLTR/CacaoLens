@@ -22,7 +22,9 @@ dependencies:
   dio: ^5.4.1
   
   # Image Handling
-  image_picker: ^1.2.2
+  camera: ^0.10.5+9
+  image_picker: ^1.0.7
+
   cached_network_image: ^3.3.1
   
   # Storage

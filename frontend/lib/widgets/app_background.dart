@@ -20,22 +20,22 @@ class AppBackground extends StatelessWidget {
             ),
           ),
         ),
-        Positioned(
+        const Positioned(
           top: -40,
           left: -30,
           child: _LeafBlob(size: 140, opacity: 0.12),
         ),
-        Positioned(
+        const Positioned(
           top: 120,
           right: -40,
           child: _LeafBlob(size: 160, opacity: 0.12),
         ),
-        Positioned(
+        const Positioned(
           bottom: -20,
           left: -10,
           child: _LeafBlob(size: 180, opacity: 0.15),
         ),
-        Positioned(
+        const Positioned(
           bottom: 40,
           right: -30,
           child: _LeafBlob(size: 140, opacity: 0.12),

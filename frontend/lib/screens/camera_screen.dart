@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:camera/camera.dart';
 
 import '../providers/analysis_provider.dart';
 import '../routes.dart';
@@ -8,15 +8,67 @@ import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/app_scaffold.dart';
 
-class CameraScreen extends StatelessWidget {
+class CameraScreen extends StatefulWidget {
   const CameraScreen({super.key});
 
-  Future<void> _handleImageSelection(BuildContext context, ImageSource source) async {
-    final provider = Provider.of<AnalysisProvider>(context, listen: false);
-    await provider.pickImage(source);
-    
-    if (provider.selectedImage != null && context.mounted) {
-      Navigator.of(context).pushReplacementNamed(AppRoutes.result);
+  @override
+  State<CameraScreen> createState() => _CameraScreenState();
+}
+
+class _CameraScreenState extends State<CameraScreen> {
+  CameraController? _controller;
+  List<CameraDescription>? cameras;
+  bool _isCameraInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initCamera();
+  }
+
+  Future<void> _initCamera() async {
+    try {
+      cameras = await availableCameras();
+      if (cameras != null && cameras!.isNotEmpty) {
+        _controller = CameraController(
+          cameras![0], 
+          ResolutionPreset.high,
+          enableAudio: false,
+        );
+        await _controller!.initialize();
+        if (!mounted) return;
+        setState(() {
+          _isCameraInitialized = true;
+        });
+      }
+    } catch (e) {
+      debugPrint("Error inicializando cámara: $e");
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickImage(BuildContext context, ImageSource source) async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: source);
+    if (image != null && context.mounted) {
+      Navigator.of(context).pushNamed(AppRoutes.preview, arguments: image.path);
+    }
+  }
+
+  Future<void> _capturePhoto() async {
+    if (_controller == null || !_controller!.value.isInitialized) return;
+    try {
+      final XFile image = await _controller!.takePicture();
+      if (mounted) {
+        Navigator.of(context).pushNamed(AppRoutes.preview, arguments: image.path);
+      }
+    } catch (e) {
+      debugPrint("Error al tomar foto: $e");
     }
   }
 
@@ -36,8 +88,22 @@ class CameraScreen extends StatelessWidget {
                     color: AppColors.grayLight,
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: const Center(
-                    child: Icon(Icons.image, size: 120, color: AppColors.gray),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: _isCameraInitialized
+                        ? SizedBox.expand(
+                            child: FittedBox(
+                              fit: BoxFit.cover,
+                              child: SizedBox(
+                                width: _controller!.value.previewSize?.height ?? 1,
+                                height: _controller!.value.previewSize?.width ?? 1,
+                                child: CameraPreview(_controller!),
+                              ),
+                            ),
+                          )
+                        : const Center(
+                            child: CircularProgressIndicator(color: AppColors.green),
+                          ),
                   ),
                 ),
                 Center(
@@ -78,11 +144,10 @@ class CameraScreen extends StatelessWidget {
                   children: [
                     _CircleIcon(
                       icon: Icons.image,
-                      onTap: () => _handleImageSelection(context, ImageSource.gallery),
+                      onTap: () => _pickImage(context, ImageSource.gallery),
                     ),
                     _CircleCapture(
-                      // Llama a la cámara nativa
-                      onTap: () => _handleImageSelection(context, ImageSource.camera),
+                      onTap: _capturePhoto,
                     ),
                     _CircleIcon(
                       icon: Icons.sync,
