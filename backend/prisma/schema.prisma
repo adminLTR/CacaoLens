@@ -9,3 +9,12 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+model Analysis {
+  id                Int      @id @default(autoincrement())
+  estado            String @db.VarChar(100)
+  fechaRegistro     DateTime
+  idCacao           Int
+  idUsuario         Int
+  confiabilidad     Float
+}

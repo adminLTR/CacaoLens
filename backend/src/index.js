@@ -18,6 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 const routes = require('./routes');
 app.use('/api', routes);
+app.use('/api/analysis', require('./routes/analysis.routes'));
 
 // Health check
 app.get('/health', (req, res) => {

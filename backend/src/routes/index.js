@@ -8,9 +8,8 @@ router.get('/', (req, res) => {
     message: 'CacaoLens API',
     version: '1.0.0',
     endpoints: {
-      
+      analysis: '/api/analysis',
     }
   });
 });
-
 module.exports = router;

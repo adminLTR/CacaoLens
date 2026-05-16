@@ -54,9 +54,11 @@ def predict():
             confianza = 0.99
 
         return jsonify({
-            "estado": "exito",
-            "prediccion": resultado,
-            "confianza": confianza
+            "estado": resultado,
+            "confiabilidad": confianza,
+            "fechaRegistro": None,
+            "idCacao": 1,
+            "idUsuario": 1
         })
 
     except Exception as e:
