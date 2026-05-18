@@ -9,3 +9,44 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+model Usuario {
+  id             Int        @id @default(autoincrement())
+  nombre         String
+  apellidos      String
+  fechaNac       DateTime
+  DNI            String     @unique
+  correo         String     @unique
+  contrasena     String
+  fechaRegistro  DateTime   @default(now())
+  estado         Boolean
+  sesiones       Sesiones[]
+  analisis       Analisis[]
+}
+
+model Sesiones {
+  id           Int      @id @default(autoincrement())
+  idUsuario    Int
+  token        String
+  activo       Boolean
+  fechaInicio  DateTime
+  fechExp      DateTime
+  usuario      Usuario  @relation(fields: [idUsuario], references: [id])
+}
+
+model Cacao {
+  id       Int        @id @default(autoincrement())
+  imagen   String
+  analisis Analisis[]
+}
+
+model Analisis {
+  id            Int      @id @default(autoincrement())
+  estado        String
+  fechRegistro  DateTime
+  idCacao       Int
+  idUsuario     Int
+  contabilidad  Int
+  cacao         Cacao    @relation(fields: [idCacao], references: [id])
+  usuario       Usuario  @relation(fields: [idUsuario], references: [id])
+}
