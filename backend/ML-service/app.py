@@ -3,8 +3,6 @@ import numpy as np
 from PIL import Image
 import io
 import os
-
-# ¡NUEVO!: Importamos el intérprete desde la nueva librería oficial
 from ai_edge_litert.interpreter import Interpreter
 
 app = Flask(__name__)
@@ -35,12 +33,12 @@ try:
         input_details = modelo_cacao.get_input_details()
         output_details = modelo_cacao.get_output_details()
         
-        print("✅ Modelo TFLite cargado correctamente con ai_edge_litert.")
+        print("Modelo TFLite cargado correctamente con ai_edge_litert.")
     else:
-        print(f"❌ Modelo no encontrado: {MODEL_PATH}")
+        print(f"Modelo no encontrado: {MODEL_PATH}")
 
 except Exception as e:
-    print(f"❌ Error cargando modelo: {e}")
+    print(f"Error cargando modelo: {e}")
     modelo_cacao = None
 
 # Endpoint principal
@@ -79,7 +77,7 @@ def predict():
         # Resize según modelo
         imagen = imagen.resize((224, 224))
 
-        # ¡MEJORA!: Convertir a array usando numpy directamente (más rápido y sin depender de Keras)
+        # Convertir a array usando numpy directamente 
         arreglo_imagen = np.array(imagen, dtype=np.float32)
 
         # Expandir dimensiones
