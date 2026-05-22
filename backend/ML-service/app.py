@@ -1,66 +1,136 @@
 from flask import Flask, request, jsonify
-import tensorflow as tf
 import numpy as np
 from PIL import Image
 import io
 import os
 
+# ¡NUEVO!: Importamos el intérprete desde la nueva librería oficial
+from ai_edge_litert.interpreter import Interpreter
+
 app = Flask(__name__)
 
-# --- AQUÍ ESTÁ EL CAMBIO ---
-# Pon el nombre exacto del archivo .keras que te pasó La Torre
-MODEL_PATH = "./models/Cacao_InceptionV3_best.keras"
+# Ruta exacta del modelo según tus logs
+MODEL_PATH = "models/Cacao_InceptionV3_best.tflite"
 
+# Variables globales
+modelo_cacao = None
+input_details = None
+output_details = None
+
+# Clases del modelo
+CLASES_CACAO = [
+    "Saludable",
+    "Pudrición Negra",
+    "Pod Borer"
+]
+
+# Cargar modelo TFLite con ai_edge_litert
 try:
     if os.path.exists(MODEL_PATH):
-        # TensorFlow carga los .keras exactamente igual que los .h5
-        modelo_cacao = tf.keras.models.load_model(MODEL_PATH)
-        print("Modelo .keras cargado correctamente.")
+        # Inicializar el intérprete usando la nueva librería
+        modelo_cacao = Interpreter(model_path=MODEL_PATH)
+        modelo_cacao.allocate_tensors()
+        
+        # Guardar detalles de entrada y salida
+        input_details = modelo_cacao.get_input_details()
+        output_details = modelo_cacao.get_output_details()
+        
+        print("✅ Modelo TFLite cargado correctamente con ai_edge_litert.")
     else:
-        modelo_cacao = None
-        print(f"Advertencia: Archivo {MODEL_PATH} no encontrado.")
+        print(f"❌ Modelo no encontrado: {MODEL_PATH}")
+
 except Exception as e:
+    print(f"❌ Error cargando modelo: {e}")
     modelo_cacao = None
-    print(f"Error al cargar el modelo: {e}")
 
-# Las clases según su proyecto
-CLASES_CACAO = ["Saludable", "Pudrición Negra", "Pod Borer"]
-
+# Endpoint principal
 @app.route('/predict', methods=['POST'])
 def predict():
+
+    # Verificar archivo
     if 'file' not in request.files:
-        return jsonify({"estado": "error", "mensaje": "No se envió ningún archivo"}), 400
-    
+        return jsonify({
+            "error": "No se envió ningún archivo"
+        }), 400
+
     file = request.files['file']
+
+    # Verificar nombre
     if file.filename == '':
-        return jsonify({"estado": "error", "mensaje": "El archivo no tiene nombre"}), 400
+        return jsonify({
+            "error": "Archivo inválido"
+        }), 400
+
+    # Verificar modelo
+    if modelo_cacao is None:
+        return jsonify({
+            "error": "Modelo no disponible"
+        }), 503
 
     try:
+        # Leer imagen
         image_bytes = file.read()
-        imagen = Image.open(io.BytesIO(image_bytes)).convert("RGB")
-        
-        # Redimensionar a 224x224 (verifica este tamaño con La Torre si falla)
+
+        # Convertir imagen
+        imagen = Image.open(
+            io.BytesIO(image_bytes)
+        ).convert("RGB")
+
+        # Resize según modelo
         imagen = imagen.resize((224, 224))
-        arreglo_imagen = tf.keras.preprocessing.image.img_to_array(imagen)
-        arreglo_imagen = np.expand_dims(arreglo_imagen, axis=0) / 255.0
 
-        if modelo_cacao:
-            predicciones = modelo_cacao.predict(arreglo_imagen)
-            indice_clase = np.argmax(predicciones[0])
-            confianza = float(np.max(predicciones[0]))
-            resultado = CLASES_CACAO[indice_clase]
-        else:
-            resultado = "Modo de Prueba (Modelo no cargado)"
-            confianza = 0.99
+        # ¡MEJORA!: Convertir a array usando numpy directamente (más rápido y sin depender de Keras)
+        arreglo_imagen = np.array(imagen, dtype=np.float32)
 
+        # Expandir dimensiones
+        arreglo_imagen = np.expand_dims(
+            arreglo_imagen,
+            axis=0
+        )
+
+        # Normalizar
+        arreglo_imagen = arreglo_imagen / 255.0
+
+        # Predicción usando el intérprete
+        modelo_cacao.set_tensor(input_details[0]['index'], arreglo_imagen)
+        modelo_cacao.invoke()
+        predicciones = modelo_cacao.get_tensor(output_details[0]['index'])
+
+        indice_clase = int(
+            np.argmax(predicciones[0])
+        )
+
+        confianza = float(
+            np.max(predicciones[0])
+        )
+
+        resultado = CLASES_CACAO[indice_clase]
+
+        # Respuesta para Express (Node.js)
         return jsonify({
-            "estado": "exito",
-            "prediccion": resultado,
-            "confianza": confianza
+            "estado": resultado,
+            "confiabilidad": round(
+                confianza,
+                4
+            )
         })
 
     except Exception as e:
-        return jsonify({"estado": "error", "mensaje": str(e)}), 500
+        return jsonify({
+            "error": str(e)
+        }), 500
+
+# Health check opcional
+@app.route('/health', methods=['GET'])
+def health():
+    return jsonify({
+        "status": "OK",
+        "model_loaded": modelo_cacao is not None
+    })
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000, debug=True)
+    app.run(
+        host='0.0.0.0',
+        port=8000,
+        debug=True
+    )
