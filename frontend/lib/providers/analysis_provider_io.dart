@@ -36,6 +36,26 @@ class AnalysisProvider extends ChangeNotifier {
     final pickedFile = await picker.pickImage(source: source);
 
     if (pickedFile != null) {
+      final fileExtension = pickedFile.path.split('.').last.toLowerCase();
+      final validExtensions = ['jpg', 'jpeg', 'png'];
+
+      if (!validExtensions.contains(fileExtension)) {
+        _result = 'Error: Solo se permiten imágenes JPG o PNG';
+        _selectedImage = null;
+        notifyListeners();
+        return;
+      }
+
+      final fileSize = await pickedFile.length();
+      final maxSizeBytes = 5 * 1024 * 1024; 
+
+      if (fileSize > maxSizeBytes) {
+        _result = 'Error: La imagen es muy pesada (Máximo 5MB)';
+        _selectedImage = null;
+        notifyListeners();
+        return;
+      }
+
       _selectedImage = File(pickedFile.path);
       _result = 'Analizando...';
       notifyListeners();

@@ -1,9 +1,8 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 
-import '../providers/analysis_provider.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/app_button.dart';
@@ -14,19 +13,16 @@ class ResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Obtenemos los argumentos enviados desde PreviewScreen
     final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     final String? imagePath = args?['imagePath'];
     final String prediccion = args?['prediccion'] ?? 'DESCONOCIDO';
     final double confianza = args?['confianza'] ?? 0.0;
     
-    // Obtenemos el progreso y texto redondeado
     final double progressValue = confianza.clamp(0.0, 1.0);
     final String confianzaTexto = (confianza * 100).toStringAsFixed(1);
     
-    // Damos un color basado en la predicción
     Color resultColor = AppColors.green;
-    if (prediccion.toUpperCase().contains('PUDRICIÓN') || prediccion.toUpperCase().contains('BORER')) {
+    if (prediccion.toUpperCase().contains('Baja') || prediccion.toUpperCase().contains('Media')) {
       resultColor = Colors.redAccent;
     }
 
@@ -48,25 +44,34 @@ class ResultScreen extends StatelessWidget {
                 children: [
                   Container(
                     height: 140,
+                    width: double.infinity,
                     decoration: BoxDecoration(
                       color: AppColors.white,
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: const Center(
-                      child: Icon(Icons.image, size: 72, color: AppColors.grayDark),
-                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: imagePath != null && !kIsWeb
+                        ? Image.file(File(imagePath), fit: BoxFit.cover)
+                        : const Center(
+                            child: Icon(Icons.image, size: 72, color: AppColors.grayDark),
+                          ),
                   ),
                   const SizedBox(height: 18),
-                  Text('SALUDABLE', style: AppTextStyles.titleLarge.copyWith(color: AppColors.green)),
+                  
+                  Text(
+                    prediccion.toUpperCase(), 
+                    style: AppTextStyles.titleLarge.copyWith(color: resultColor)
+                  ),
                   const SizedBox(height: 6),
-                  Text('Confianza: 96.5%', style: AppTextStyles.body),
+                  Text('Confianza: $confianzaTexto%', style: AppTextStyles.body),
                   const SizedBox(height: 16),
+                  
                   ClipRRect(
                     borderRadius: BorderRadius.circular(20),
                     child: LinearProgressIndicator(
-                      value: 0.965,
+                      value: progressValue,
                       minHeight: 14,
-                      color: AppColors.green,
+                      color: resultColor,
                       backgroundColor: AppColors.gray,
                     ),
                   ),
@@ -77,11 +82,29 @@ class ResultScreen extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: AppButton.primary(label: 'Guardar', onPressed: () {}),
+                  child: AppButton.primary(
+                    label: 'Guardar', 
+                    onPressed: () {
+                    }
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: AppButton.secondary(label: 'Exportar', onPressed: () {}),
+                  child: AppButton.secondary(
+                    label: 'Exportar', 
+                    onPressed: () async {
+                      final String shareText = '¡Diagnóstico CacaoLens!\nResultado: $prediccion\nConfianza: $confianzaTexto%';
+                      
+                      if (imagePath != null && !kIsWeb) {
+                        await Share.shareXFiles(
+                          [XFile(imagePath)],
+                          text: shareText,
+                        );
+                      } else {
+                        await Share.share(shareText);
+                      }
+                    }
+                  ),
                 ),
               ],
             ),
