@@ -78,7 +78,7 @@ class AnalysisProvider extends ChangeNotifier {
       debugPrint('Conexion detectada. Enviando a la API...');
       await _callBackendAPI();
     }
-
+    
     _isLoading = false;
     notifyListeners();
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
+import 'providers/history_provider.dart';
 import 'providers/analysis_provider.dart';
 import 'routes.dart';
 import 'screens/camera_screen.dart';
@@ -24,6 +25,7 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AnalysisProvider()),
+        ChangeNotifierProvider(create: (_) => HistoryProvider()),
       ],
       child: const CacaoLensApp(),
     ),

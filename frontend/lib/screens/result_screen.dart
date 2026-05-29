@@ -1,8 +1,12 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart'; 
 import 'package:share_plus/share_plus.dart';
 
+import '../models/history_item.dart';
+import '../providers/history_provider.dart';
+import '../providers/analysis_provider.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/app_button.dart';
@@ -13,16 +17,30 @@ class ResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-    final String? imagePath = args?['imagePath'];
-    final String prediccion = args?['prediccion'] ?? 'DESCONOCIDO';
-    final double confianza = args?['confianza'] ?? 0.0;
+    final provider = Provider.of<AnalysisProvider>(context);
+    final String fullResult = provider.result;
     
+    String prediccion = 'DESCONOCIDO';
+    double confianza = 0.0;
+    
+    if (fullResult.contains('(')) {
+      final parts = fullResult.split('(');
+      prediccion = parts[0].trim();
+      final confString = parts[1].replaceAll('%)', '').trim();
+      confianza = (double.tryParse(confString) ?? 0.0) / 100.0;
+    } else {
+      prediccion = fullResult; 
+    }
+
+    final String? imagePath = !kIsWeb && provider.selectedImage != null 
+        ? (provider.selectedImage as dynamic).path 
+        : null;
+
     final double progressValue = confianza.clamp(0.0, 1.0);
     final String confianzaTexto = (confianza * 100).toStringAsFixed(1);
     
     Color resultColor = AppColors.green;
-    if (prediccion.toUpperCase().contains('Baja') || prediccion.toUpperCase().contains('Media')) {
+    if (prediccion.toUpperCase().contains('BAJA') || prediccion.toUpperCase().contains('MEDIA')) {
       resultColor = Colors.redAccent;
     }
 
@@ -50,14 +68,13 @@ class ResultScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16),
                     ),
                     clipBehavior: Clip.antiAlias,
-                    child: imagePath != null && !kIsWeb
+                    child: imagePath != null
                         ? Image.file(File(imagePath), fit: BoxFit.cover)
                         : const Center(
                             child: Icon(Icons.image, size: 72, color: AppColors.grayDark),
                           ),
                   ),
                   const SizedBox(height: 18),
-                  
                   Text(
                     prediccion.toUpperCase(), 
                     style: AppTextStyles.titleLarge.copyWith(color: resultColor)
@@ -65,7 +82,6 @@ class ResultScreen extends StatelessWidget {
                   const SizedBox(height: 6),
                   Text('Confianza: $confianzaTexto%', style: AppTextStyles.body),
                   const SizedBox(height: 16),
-                  
                   ClipRRect(
                     borderRadius: BorderRadius.circular(20),
                     child: LinearProgressIndicator(
@@ -85,6 +101,22 @@ class ResultScreen extends StatelessWidget {
                   child: AppButton.primary(
                     label: 'Guardar', 
                     onPressed: () {
+                      final historyItem = HistoryItem(
+                        id: DateTime.now().millisecondsSinceEpoch.toString(),
+                        imagePath: imagePath ?? '',
+                        status: prediccion,
+                        confidence: confianza,
+                        date: DateTime.now(),
+                      );
+                      Provider.of<HistoryProvider>(context, listen: false).saveResult(historyItem);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('¡Análisis guardado en el historial!'),
+                            backgroundColor: AppColors.green,
+                          ),
+                        );
+                      }
                     }
                   ),
                 ),
@@ -95,7 +127,7 @@ class ResultScreen extends StatelessWidget {
                     onPressed: () async {
                       final String shareText = '¡Diagnóstico CacaoLens!\nResultado: $prediccion\nConfianza: $confianzaTexto%';
                       
-                      if (imagePath != null && !kIsWeb) {
+                      if (imagePath != null) {
                         await Share.shareXFiles(
                           [XFile(imagePath)],
                           text: shareText,

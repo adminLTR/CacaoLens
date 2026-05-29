@@ -1,53 +1,73 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
 import '../models/history_item.dart';
 import '../theme/app_colors.dart';
-import 'status_pill.dart';
+import '../theme/app_text_styles.dart';
 
 class HistoryItemCard extends StatelessWidget {
-  const HistoryItemCard({super.key, required this.item});
-
   final HistoryItem item;
+
+  const HistoryItemCard({super.key, required this.item});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.grayLight,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: const [
-          BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2)),
-        ],
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         children: [
           Container(
-            width: 64,
-            height: 64,
+            width: 70,
+            height: 70,
             decoration: BoxDecoration(
               color: AppColors.white,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: AppColors.gray),
+              borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(Icons.image, color: AppColors.grayDark),
+            clipBehavior: Clip.antiAlias,
+            child: item.imagePath.isNotEmpty && !kIsWeb
+                ? Image.file(
+                    File(item.imagePath),
+                    fit: BoxFit.cover,
+                  )
+                : const Icon(Icons.image, color: AppColors.grayDark),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
+
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Fecha: ${item.date}', style: const TextStyle(fontWeight: FontWeight.w600)),
-                const SizedBox(height: 6),
+                Text('Fecha: ${item.dateFormatted}', style: AppTextStyles.body),
+                const SizedBox(height: 8),
+
                 Row(
                   children: [
                     const Text('Estado: '),
-                    StatusPill(label: item.status, color: item.statusColor),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: item.statusColor,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        item.status,
+                        style: AppTextStyles.body.copyWith(color: AppColors.white, fontSize: 12),
+                      ),
+                    ),
                   ],
                 ),
-                const SizedBox(height: 4),
-                Text('Confianza: ${item.confidence}%'),
+                const SizedBox(height: 8),
+
+                Text(
+                  'Confianza: ${(item.confidence * 100).toStringAsFixed(1)}%',
+                  style: AppTextStyles.body,
+                ),
               ],
             ),
           ),
