@@ -82,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Analiza la calidad del cacao al instante',
+              'Analiza el estado del cacao al instante',
               style: AppTextStyles.titleMedium,
               textAlign: TextAlign.center,
             ),

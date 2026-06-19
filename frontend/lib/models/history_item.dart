@@ -17,7 +17,8 @@ class HistoryItem {
   });
 
   Color get statusColor {
-    if (status.toUpperCase().contains('BAJA') || status.toUpperCase().contains('MEDIA')) {
+    final normalized = status.toUpperCase();
+    if (normalized.contains('PUDRIC') || normalized.contains('BORER')) {
       return Colors.redAccent;
     }
     return Colors.green;

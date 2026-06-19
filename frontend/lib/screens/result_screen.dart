@@ -40,7 +40,8 @@ class ResultScreen extends StatelessWidget {
     final String confianzaTexto = (confianza * 100).toStringAsFixed(1);
     
     Color resultColor = AppColors.green;
-    if (prediccion.toUpperCase().contains('BAJA') || prediccion.toUpperCase().contains('MEDIA')) {
+    final normalizedPrediction = prediccion.toUpperCase();
+    if (normalizedPrediction.contains('PUDRIC') || normalizedPrediction.contains('BORER')) {
       resultColor = Colors.redAccent;
     }
 
@@ -128,12 +129,16 @@ class ResultScreen extends StatelessWidget {
                       final String shareText = '¡Diagnóstico CacaoLens!\nResultado: $prediccion\nConfianza: $confianzaTexto%';
                       
                       if (imagePath != null) {
-                        await Share.shareXFiles(
-                          [XFile(imagePath)],
-                          text: shareText,
+                        await SharePlus.instance.share(
+                          ShareParams(
+                            files: [XFile(imagePath)],
+                            text: shareText,
+                          ),
                         );
                       } else {
-                        await Share.share(shareText);
+                        await SharePlus.instance.share(
+                          ShareParams(text: shareText),
+                        );
                       }
                     }
                   ),

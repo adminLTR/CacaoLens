@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:provider/provider.dart';
 
+import '../providers/analysis_provider.dart';
 import '../routes.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
@@ -37,49 +37,14 @@ class _PreviewScreenState extends State<PreviewScreen> {
     setState(() => _isAnalyzing = true);
     
     try {
-      var request = http.MultipartRequest(
-        'POST',
-        // Para dispositivo físico real, usamos la IP de tu PC en la red.
-        // Si no te funciona, cámbiala a 'http://10.0.2.2:8000/predict' si usas emulador.
-        Uri.parse('http://10.0.2.2:8000/predict'),
-      );
-      
-      if (kIsWeb) {
-        // En Web necesitamos obtener los bytes desde la URL blob generada por image_picker
-        var responseBytes = await http.get(Uri.parse(_imagePath!));
-        request.files.add(
-          http.MultipartFile.fromBytes('file', responseBytes.bodyBytes, filename: 'upload.jpg'),
-        );
-      } else {
-        request.files.add(
-          await http.MultipartFile.fromPath('file', _imagePath!),
-        );
-      }
+      await context.read<AnalysisProvider>().analyzeImagePath(_imagePath!);
 
-      var response = await request.send();
-      if (response.statusCode == 200) {
-        var responseData = await response.stream.bytesToString();
-        var result = json.decode(responseData);
-        
-        if (!mounted) return;
-        Navigator.of(context).pushReplacementNamed(
-          AppRoutes.result, 
-          arguments: {
-            'imagePath': _imagePath,
-            'prediccion': result['prediccion'],
-            'confianza': result['confianza'],
-          }
-        );
-      } else {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error del servidor: ${response.statusCode}')),
-        );
-      }
+      if (!mounted) return;
+      Navigator.of(context).pushReplacementNamed(AppRoutes.result);
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error de conexión: $e')),
+        SnackBar(content: Text('Error de analisis: $e')),
       );
     } finally {
       if (mounted) setState(() => _isAnalyzing = false);

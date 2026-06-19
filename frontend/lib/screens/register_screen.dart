@@ -115,7 +115,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
             const SizedBox(height: 12),
             Text(
-              'Analiza la calidad del cacao al instante',
+              'Analiza el estado del cacao al instante',
               style: AppTextStyles.titleMedium,
               textAlign: TextAlign.center,
             ),
