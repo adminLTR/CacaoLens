@@ -20,3 +20,11 @@
 # OS files
 .DS_Store
 Thumbs.db
+
+# Modelos de Machine Learning y pesos
+*.keras
+*.tflite
+*.h5
+
+.jpg
+*.jpeg
