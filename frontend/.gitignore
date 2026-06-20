@@ -8,6 +8,7 @@
 .pub-cache/
 .pub/
 build/
+assets/models/*.tflite
 .env
 *.log
 *.swp

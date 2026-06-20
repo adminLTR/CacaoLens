@@ -75,6 +75,8 @@ ML/models/*.pth
 backend/ML-service/models/*.h5
 backend/ML-service/models/*.keras
 backend/ML-service/models/*.pb
+backend/ML-service/models/*.tflite
+frontend/assets/models/*.tflite
 !ML/models/.gitkeep
 !backend/ML-service/models/.gitkeep
 
