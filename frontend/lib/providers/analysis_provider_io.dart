@@ -3,12 +3,13 @@ import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
+
+import '../config/api_config.dart';
 
 class AnalysisProvider extends ChangeNotifier {
   File? _selectedImage;
@@ -19,6 +20,7 @@ class AnalysisProvider extends ChangeNotifier {
   final List<String> _labels = ['Saludable', 'Pudrición Negra', 'Pod Borer'];
 
   File? get selectedImage => _selectedImage;
+  String? get selectedImagePath => _selectedImage?.path;
   String get result => _result;
   bool get isLoading => _isLoading;
 
@@ -37,7 +39,13 @@ class AnalysisProvider extends ChangeNotifier {
 
   Future<void> pickImage(ImageSource source) async {
     final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: source);
+    final prefs = await SharedPreferences.getInstance();
+    final pickedFile = await picker.pickImage(
+      source: source,
+      imageQuality: _imageQualityFromSetting(
+        prefs.getString('settings_image_quality'),
+      ),
+    );
 
     if (pickedFile != null) {
       final fileExtension = pickedFile.path.split('.').last.toLowerCase();
@@ -91,7 +99,10 @@ class AnalysisProvider extends ChangeNotifier {
     notifyListeners();
 
     final connectivityResult = await Connectivity().checkConnectivity();
-    if (_isOffline(connectivityResult)) {
+    final prefs = await SharedPreferences.getInstance();
+    final strictOffline = prefs.getBool('settings_offline_mode') ?? false;
+
+    if (strictOffline || _isOffline(connectivityResult)) {
       debugPrint('Modo offline detectado. Usando modelo embebido...');
       await _runLocalInference();
     } else {
@@ -166,7 +177,7 @@ class AnalysisProvider extends ChangeNotifier {
 
   Future<void> _callBackendAPI() async {
     try {
-      final baseUrl = _apiBaseUrl;
+      final baseUrl = ApiConfig.baseUrl;
       final uri = Uri.parse('$baseUrl/analysis/image');
       final request = http.MultipartRequest('POST', uri);
       final prefs = await SharedPreferences.getInstance();
@@ -202,15 +213,6 @@ class AnalysisProvider extends ChangeNotifier {
     }
   }
 
-  String get _apiBaseUrl {
-    final envUrl = dotenv.env['API_BASE_URL'];
-    if (envUrl != null && envUrl.trim().isNotEmpty) {
-      return envUrl.trim();
-    }
-
-    return 'http://localhost:3000/api';
-  }
-
   bool _isOffline(Object connectivityResult) {
     if (connectivityResult is List<ConnectivityResult>) {
       return connectivityResult.contains(ConnectivityResult.none);
@@ -223,5 +225,17 @@ class AnalysisProvider extends ChangeNotifier {
     final raw = prediction['confiabilidad'] ?? prediction['confianza'] ?? 0;
     final value = raw is num ? raw.toDouble() : double.tryParse(raw.toString()) ?? 0.0;
     return value > 1 ? value / 100 : value;
+  }
+
+  int _imageQualityFromSetting(String? value) {
+    switch (value) {
+      case 'Baja':
+        return 55;
+      case 'Media':
+        return 75;
+      case 'Alta':
+      default:
+        return 95;
+    }
   }
 }

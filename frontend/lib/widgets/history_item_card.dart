@@ -13,6 +13,11 @@ class HistoryItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localImageExists = item.imagePath.isNotEmpty &&
+        !kIsWeb &&
+        File(item.imagePath).existsSync();
+    final webImageExists = item.imagePath.isNotEmpty && kIsWeb;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
@@ -30,11 +35,22 @@ class HistoryItemCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
             ),
             clipBehavior: Clip.antiAlias,
-            child: item.imagePath.isNotEmpty && !kIsWeb
+            child: localImageExists
                 ? Image.file(
                     File(item.imagePath),
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Icon(Icons.broken_image, color: AppColors.grayDark);
+                    },
                   )
+                : webImageExists
+                    ? Image.network(
+                        item.imagePath,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(Icons.broken_image, color: AppColors.grayDark);
+                        },
+                      )
                 : const Icon(Icons.image, color: AppColors.grayDark),
           ),
           const SizedBox(width: 16),

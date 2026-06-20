@@ -1,17 +1,11 @@
 import 'dart:convert';
 
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
-class AuthService {
-  static String get _baseUrl {
-    final envUrl = dotenv.env['API_BASE_URL'];
-    if (envUrl != null && envUrl.trim().isNotEmpty) {
-      return envUrl.trim();
-    }
+import '../config/api_config.dart';
 
-    return 'http://localhost:3000/api';
-  }
+class AuthService {
+  static String get _baseUrl => ApiConfig.baseUrl;
 
   static Future<Map<String, dynamic>> login({
     required String email,
@@ -106,6 +100,23 @@ class AuthService {
     }
 
     return payload;
+  }
+
+  static Future<void> logout({required String token}) async {
+    final uri = Uri.parse('$_baseUrl/auth/logout');
+    final response = await http.post(
+      uri,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      final payload = _decodeJson(response.body);
+      final message = payload['error']?.toString() ?? 'Error al cerrar sesion';
+      throw Exception(message);
+    }
   }
 
   static Map<String, dynamic> _decodeJson(String body) {

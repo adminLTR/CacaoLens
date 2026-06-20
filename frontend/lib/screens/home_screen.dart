@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../providers/analysis_provider.dart';
 import '../routes.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/app_button.dart';
@@ -42,8 +40,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final analysisProvider = Provider.of<AnalysisProvider>(context, listen: false);
-
     return AppScaffold(
       showMenu: true,
       title: const Text('CacaoLens'),
@@ -63,26 +59,25 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 24),
             AppButton.primary(
               label: 'Usar camara',
-              onPressed: () async {
-                await analysisProvider.pickImage(ImageSource.camera);
-                if (analysisProvider.selectedImage != null && context.mounted) {
-                  Navigator.of(context).pushNamed(AppRoutes.result);
-                }
-              },
+              onPressed: () => Navigator.of(context).pushNamed(AppRoutes.camera),
             ),
             const SizedBox(height: 12),
             AppButton.secondary(
               label: 'Abrir galeria',
-              onPressed: () async {
-                await analysisProvider.pickImage(ImageSource.gallery);
-                if (analysisProvider.selectedImage != null && context.mounted) {
-                  Navigator.of(context).pushNamed(AppRoutes.result);
-                }
-              },
+              onPressed: () => _pickFromGallery(context),
             ),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _pickFromGallery(BuildContext context) async {
+    final picker = ImagePicker();
+    final image = await picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null && context.mounted) {
+      Navigator.of(context).pushNamed(AppRoutes.preview, arguments: image.path);
+    }
   }
 }

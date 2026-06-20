@@ -23,6 +23,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late final TextEditingController _birthdateController;
   bool _isLoading = true;
   bool _isSaving = false;
+  bool _isLoggingOut = false;
 
   @override
   void initState() {
@@ -112,6 +113,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _showMessage(e.toString().replaceFirst('Exception: ', ''));
     } finally {
       if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
+  Future<void> _handleLogout() async {
+    if (_isLoggingOut) return;
+
+    setState(() => _isLoggingOut = true);
+
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('auth_token');
+
+    try {
+      if (token != null && token.isNotEmpty) {
+        await AuthService.logout(token: token);
+      }
+    } catch (e) {
+      debugPrint('Error cerrando sesion en backend: $e');
+    } finally {
+      await prefs.remove('auth_token');
+      await prefs.remove('user_email');
+      await prefs.remove('user_name');
+      await prefs.remove('user_last_name');
+      await prefs.remove('user_birthdate');
+
+      if (mounted) {
+        setState(() => _isLoggingOut = false);
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          AppRoutes.login,
+          (route) => false,
+        );
+      }
     }
   }
 
@@ -253,8 +285,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 12),
             AppButton.danger(
-              label: 'Cerrar sesion',
-              onPressed: () => Navigator.of(context).pushReplacementNamed(AppRoutes.login),
+              label: _isLoggingOut ? 'Cerrando...' : 'Cerrar sesion',
+              onPressed: _isLoggingOut ? null : _handleLogout,
             ),
           ],
         ),

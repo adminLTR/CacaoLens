@@ -2,10 +2,11 @@ import 'dart:convert';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../config/api_config.dart';
 
 class AnalysisProvider extends ChangeNotifier {
   XFile? _selectedImage;
@@ -13,6 +14,7 @@ class AnalysisProvider extends ChangeNotifier {
   bool _isLoading = false;
 
   XFile? get selectedImage => _selectedImage;
+  String? get selectedImagePath => _selectedImage?.path;
   String get result => _result;
   bool get isLoading => _isLoading;
 
@@ -44,7 +46,10 @@ class AnalysisProvider extends ChangeNotifier {
     notifyListeners();
 
     final connectivityResult = await Connectivity().checkConnectivity();
-    if (_isOffline(connectivityResult)) {
+    final prefs = await SharedPreferences.getInstance();
+    final strictOffline = prefs.getBool('settings_offline_mode') ?? false;
+
+    if (strictOffline || _isOffline(connectivityResult)) {
       _result = 'Sin conexion. Analisis local no disponible en web.';
     } else {
       await _callBackendAPI();
@@ -56,7 +61,7 @@ class AnalysisProvider extends ChangeNotifier {
 
   Future<void> _callBackendAPI() async {
     try {
-      final baseUrl = _apiBaseUrl;
+      final baseUrl = ApiConfig.baseUrl;
       final uri = Uri.parse('$baseUrl/analysis/image');
       final request = http.MultipartRequest('POST', uri);
       final prefs = await SharedPreferences.getInstance();
@@ -94,15 +99,6 @@ class AnalysisProvider extends ChangeNotifier {
       debugPrint('Error al llamar API: $e');
       _result = 'Error al analizar imagen en linea';
     }
-  }
-
-  String get _apiBaseUrl {
-    final envUrl = dotenv.env['API_BASE_URL'];
-    if (envUrl != null && envUrl.trim().isNotEmpty) {
-      return envUrl.trim();
-    }
-
-    return 'http://localhost:3000/api';
   }
 
   bool _isOffline(Object connectivityResult) {

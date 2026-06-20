@@ -32,9 +32,7 @@ class ResultScreen extends StatelessWidget {
       prediccion = fullResult; 
     }
 
-    final String? imagePath = !kIsWeb && provider.selectedImage != null 
-        ? (provider.selectedImage as dynamic).path 
-        : null;
+    final String? imagePath = provider.selectedImagePath;
 
     final double progressValue = confianza.clamp(0.0, 1.0);
     final String confianzaTexto = (confianza * 100).toStringAsFixed(1);
@@ -69,11 +67,7 @@ class ResultScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16),
                     ),
                     clipBehavior: Clip.antiAlias,
-                    child: imagePath != null
-                        ? Image.file(File(imagePath), fit: BoxFit.cover)
-                        : const Center(
-                            child: Icon(Icons.image, size: 72, color: AppColors.grayDark),
-                          ),
+                    child: _ResultImage(imagePath: imagePath),
                   ),
                   const SizedBox(height: 18),
                   Text(
@@ -128,7 +122,7 @@ class ResultScreen extends StatelessWidget {
                     onPressed: () async {
                       final String shareText = '¡Diagnóstico CacaoLens!\nResultado: $prediccion\nConfianza: $confianzaTexto%';
                       
-                      if (imagePath != null) {
+                      if (imagePath != null && imagePath.isNotEmpty) {
                         await SharePlus.instance.share(
                           ShareParams(
                             files: [XFile(imagePath)],
@@ -148,6 +142,43 @@ class ResultScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _ResultImage extends StatelessWidget {
+  const _ResultImage({required this.imagePath});
+
+  final String? imagePath;
+
+  @override
+  Widget build(BuildContext context) {
+    if (imagePath == null || imagePath!.isEmpty) {
+      return const Center(
+        child: Icon(Icons.image, size: 72, color: AppColors.grayDark),
+      );
+    }
+
+    if (kIsWeb) {
+      return Image.network(
+        imagePath!,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return const Center(
+            child: Icon(Icons.broken_image, size: 72, color: AppColors.grayDark),
+          );
+        },
+      );
+    }
+
+    return Image.file(
+      File(imagePath!),
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) {
+        return const Center(
+          child: Icon(Icons.broken_image, size: 72, color: AppColors.grayDark),
+        );
+      },
     );
   }
 }

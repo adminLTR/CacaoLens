@@ -47,11 +47,6 @@ class AppDrawer extends StatelessWidget {
             route: AppRoutes.history,
           ),
           _DrawerItem(
-            label: 'Resultados',
-            icon: Icons.analytics,
-            route: AppRoutes.result,
-          ),
-          _DrawerItem(
             label: 'Configuracion',
             icon: Icons.settings,
             route: AppRoutes.settings,
