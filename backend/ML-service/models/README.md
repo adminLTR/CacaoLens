@@ -4,17 +4,17 @@
 
 ## Modelos requeridos
 
-Este servicio necesita el siguiente modelo para funcionar:
+Este servicio necesita al menos uno de estos modelos para funcionar:
 
-- **Cacao_InceptionV3_best.keras** - Modelo entrenado para clasificación de enfermedades en cacao
+- **Cacao_InceptionV3_best.tflite** - Modelo optimizado para inferencia móvil/ligera
+- **Cacao_InceptionV3_best.keras** - Modelo TensorFlow/Keras usado como fallback
 
 ## Cómo obtener los modelos
 
 ### Opción 1: Entrenar el modelo
 ```bash
 # Desde el directorio raíz del proyecto
-cd ML
-python src/train.py
+# Usa el notebook/código de entrenamiento disponible en ML/src
 ```
 
 Después de entrenar, copia el modelo generado a esta carpeta:
@@ -27,8 +27,9 @@ Contacta al equipo de desarrollo para obtener acceso al modelo pre-entrenado.
 
 ## Ubicación esperada
 
-El modelo debe estar ubicado en:
+El modelo debe estar ubicado en alguna de estas rutas:
 ```
+backend/ML-service/models/Cacao_InceptionV3_best.tflite
 backend/ML-service/models/Cacao_InceptionV3_best.keras
 ```
 
@@ -39,12 +40,12 @@ Para verificar que el modelo está correctamente ubicado:
 ls backend/ML-service/models/
 ```
 
-Deberías ver: `Cacao_InceptionV3_best.keras`
+Deberías ver: `Cacao_InceptionV3_best.tflite` o `Cacao_InceptionV3_best.keras`
 
 ## Formatos soportados
 
-- `.keras` (recomendado - formato nativo de TensorFlow/Keras)
-- `.h5` (formato legacy de Keras)
+- `.tflite`
+- `.keras`
 
 ---
 

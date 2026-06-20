@@ -16,21 +16,23 @@ El proceso es:
 
 ### Agregar Datos de Prueba
 
-Edita `prisma/seed.js` y descomenta/modifica las funciones de upsert:
+Edita `prisma/seed.js` y agrega datos compatibles con el schema actual:
 
 ```javascript
-async function seedCacao() {
-  console.log('📦 Seeding Cacao data...');
-  
-  await prisma.cacao.upsert({
-    where: { id: 1 },
+async function seedUsuario() {
+  console.log('Seeding Usuario data...');
+
+  await prisma.usuario.upsert({
+    where: { correo: 'demo@cacaolens.local' },
     update: {},
     create: {
-      id: 1,
-      name: 'Cacao Criollo',
-      variety: 'Criollo',
-      origin: 'Ecuador',
-      description: 'Cacao de alta calidad'
+      nombre: 'Demo',
+      apellidos: 'CacaoLens',
+      fechaNac: new Date('2000-01-01'),
+      DNI: '00000000',
+      correo: 'demo@cacaolens.local',
+      contrasena: 'hash-seguro-aqui',
+      estado: true
     }
   });
 }
@@ -60,17 +62,11 @@ async function seedCacao() {
   const cacaoData = [
     {
       id: 1,
-      name: 'Cacao Criollo',
-      variety: 'Criollo',
-      origin: 'Ecuador',
-      description: 'Cacao premium'
+      imagen: 'demo-saludable.jpg'
     },
     {
       id: 2,
-      name: 'Cacao Forastero',
-      variety: 'Forastero',
-      origin: 'Brasil',
-      description: 'Cacao común'
+      imagen: 'demo-pod-borer.jpg'
     }
   ];
 

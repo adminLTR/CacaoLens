@@ -49,7 +49,7 @@ CacaoLens/
 - [Prisma](https://www.prisma.io/docs)
 - [Flutter](https://flutter.dev/docs)
 - [TensorFlow](https://www.tensorflow.org/)
-- [FastAPI](https://fastapi.tiangolo.com/)
+- [Flask](https://flask.palletsprojects.com/)
 
 ## 🎯 Inicio Rápido
 
@@ -125,7 +125,6 @@ Una vez iniciados los contenedores:
 
 - **Backend API**: http://localhost:3000
 - **ML Service**: http://localhost:8000
-- **ML API Docs**: http://localhost:8000/docs
 - **MySQL**: localhost:3306
 
 **⚠️ Nota sobre el Frontend:**  
@@ -200,10 +199,12 @@ npm run seed            # Ejecutar seeders
 pip install -r requirements.txt
 
 # Ejecutar API
-uvicorn src.api:app --reload --host 0.0.0.0 --port 8000
+python app.py
 
-# Entrenar modelo
-python src/train.py
+# Modelo local
+# El servicio intenta cargar primero un .tflite y luego un .keras:
+# models/Cacao_InceptionV3_best.tflite
+# models/Cacao_InceptionV3_best.keras
 
 # Recargar el modelo
 curl -X POST http://localhost:8000/reload-model
@@ -215,18 +216,18 @@ curl -X POST http://localhost:8000/reload-model
 ```
 ML/data/
 ├── train/
-│   ├── alta_calidad/
-│   ├── media_calidad/
-│   └── baja_calidad/
+│   ├── saludable/
+│   ├── pudricion_negra/
+│   └── pod_borer/
 └── validation/
-    ├── alta_calidad/
-    ├── media_calidad/
-    └── baja_calidad/
+    ├── saludable/
+    ├── pudricion_negra/
+    └── pod_borer/
 ```
 
 2. **Entrenar el modelo**
 ```bash
-docker-compose exec ml-service python src/train.py
+# Usa el notebook/código de entrenamiento dentro de ML/src
 ```
 
 3. **Recargar el modelo en la API**
@@ -261,12 +262,14 @@ docker-compose exec ml-service bash
 
 ### Backend API
 
-#### Cacao
-- `GET /api/cacao` - Obtener todos los registros de cacao
-- `GET /api/cacao/:id` - Obtener un registro específico
-- `POST /api/cacao` - Crear nuevo registro
-- `PUT /api/cacao/:id` - Actualizar registro
-- `DELETE /api/cacao/:id` - Eliminar registro
+#### Auth
+- `POST /api/auth/register` - Registrar usuario
+- `POST /api/auth/login` - Iniciar sesión
+- `POST /api/auth/logout` - Cerrar sesión
+- `GET /api/auth/profile` - Obtener perfil autenticado
+- `PUT /api/auth/profile` - Actualizar perfil autenticado
+- `PUT /api/auth/change-password` - Cambiar contraseña
+- `DELETE /api/auth/account` - Desactivar cuenta
 
 #### Analysis
 - `POST /api/analysis/image` - Analizar imagen
@@ -296,7 +299,7 @@ docker-compose exec ml-service bash
        │
        ▼
 ┌─────────────┐
-│  FastAPI    │
+│   Flask     │
 │  ML Service │
 └─────────────┘
 ```

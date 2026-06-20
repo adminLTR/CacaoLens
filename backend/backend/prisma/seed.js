@@ -41,8 +41,4 @@ main()
     await prisma.$disconnect();
   });
 
-// Exportar funciones para uso en tests
-module.exports = {
-  seedCacao,
-  seedAnalysis
-};
+module.exports = {};

@@ -14,12 +14,6 @@ RUN npm install
 # Copy prisma schema
 COPY prisma ./prisma/
 
-# Copy entrypoint script
-COPY entrypoint.sh ./
-
-# Make entrypoint executable
-RUN chmod +x entrypoint.sh
-
 # Copy application files
 COPY . .
 
@@ -28,5 +22,4 @@ RUN mkdir -p uploads
 
 EXPOSE 3000
 
-# Use entrypoint script
-ENTRYPOINT ["./entrypoint.sh"]
+CMD ["sh", "-c", "echo 'Starting CacaoLens Backend...' && echo '================================' && echo 'Waiting for MySQL to be ready...' && until nc -z mysql 3306; do echo '   MySQL is unavailable - sleeping'; sleep 2; done && echo 'MySQL is ready!' && echo 'Generating Prisma Client...' && npx prisma generate && echo 'Syncing database schema...' && npx prisma db push --accept-data-loss && echo 'Running database seeders...' && npm run seed && echo 'Database setup complete!' && echo 'Starting application...' && echo '================================' && exec npm start"]

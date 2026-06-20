@@ -51,4 +51,14 @@ const verificarToken = async (req, res, next) => {
   }
 };
 
-module.exports = { verificarToken };
+const verificarTokenOpcional = async (req, res, next) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return next();
+  }
+
+  return verificarToken(req, res, next);
+};
+
+module.exports = { verificarToken, verificarTokenOpcional };
