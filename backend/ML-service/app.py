@@ -17,9 +17,9 @@ output_details = None
 
 # Clases del modelo
 CLASES_CACAO = [
-    "Saludable",
+    "Pod Borer",       
     "Pudrición Negra",
-    "Pod Borer"
+    "Saludable"        
 ]
 
 # Cargar modelo TFLite con ai_edge_litert
