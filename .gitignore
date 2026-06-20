@@ -127,6 +127,10 @@ prueba.jpg
 !assets/**/*.jpeg
 !assets/**/*.png
 !assets/**/*.gif
+!frontend/assets/**/*.jpg
+!frontend/assets/**/*.jpeg
+!frontend/assets/**/*.png
+!frontend/assets/**/*.gif
 
 # ========================================
 # Build & Output
