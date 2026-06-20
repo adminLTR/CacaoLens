@@ -16,10 +16,10 @@ input_details = None
 output_details = None
 
 # Clases del modelo
-CLASES_CACAO = [
-    "Saludable",
+CLASES_CACAO = [  
     "Pudrición Negra",
-    "Pod Borer"
+    "Pod Borer",
+    "Saludable"        
 ]
 
 # Cargar modelo TFLite con ai_edge_litert
