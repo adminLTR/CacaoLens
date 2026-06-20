@@ -1,26 +1,28 @@
 version: '3.8'
 
 services:
-  # MySQL Database
-  mysql:
-    image: mysql:8.0
-    container_name: cacaolens-mysql
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: cacaolens-postgres
     restart: unless-stopped
     env_file:
       - ./backend/.env
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_DATABASE: ${DB_NAME}
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     ports:
-      - "${DB_PORT}:3306"
+      - "${DB_PORT}:5432"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - postgres_data:/var/lib/postgresql/data
     networks:
       - cacaolens-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      timeout: 20s
-      retries: 10
+      test: ["CMD-SHELL", "pg_isready -U root -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # Backend API (ExpressJS + Prisma)
   backend:
@@ -38,7 +40,7 @@ services:
       - /app/node_modules
       - backend_uploads:/app/uploads
     depends_on:
-      mysql:
+      postgres:
         condition: service_healthy
       ml-service:
         condition: service_started
@@ -64,7 +66,7 @@ services:
       - cacaolens-network
 
 volumes:
-  mysql_data:
+  postgres_data:
     driver: local
   backend_uploads:
     driver: local
