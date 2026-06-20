@@ -3,13 +3,13 @@
 echo "Starting CacaoLens Backend..."
 echo "================================"
 
-# Wait for MySQL to be ready
-echo "Waiting for MySQL to be ready..."
-until nc -z mysql 3306; do
-  echo "   MySQL is unavailable - sleeping"
+# Wait for PostgreSQL to be ready
+echo "Waiting for PostgreSQL to be ready..."
+until nc -z postgres 5432; do
+  echo "   PostgreSQL is unavailable - sleeping"
   sleep 2
 done
-echo "MySQL is ready!"
+echo "PostgreSQL is ready!"
 
 # Generate Prisma Client
 echo "Generating Prisma Client..."
