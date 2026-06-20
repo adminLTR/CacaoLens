@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../theme/app_text_styles.dart';
 import '../widgets/app_scaffold.dart';
@@ -14,8 +15,45 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool _saveOriginals = true;
-  bool _offlineMode = true;
+  bool _offlineMode = false;
   String _quality = 'Alta';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSettings();
+  }
+
+  Future<void> _loadSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    if (!mounted) return;
+    setState(() {
+      _saveOriginals = prefs.getBool('settings_save_originals') ?? true;
+      _offlineMode = prefs.getBool('settings_offline_mode') ?? false;
+      _quality = prefs.getString('settings_image_quality') ?? 'Alta';
+    });
+  }
+
+  Future<void> _setSaveOriginals(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('settings_save_originals', value);
+    if (mounted) setState(() => _saveOriginals = value);
+  }
+
+  Future<void> _setOfflineMode(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('settings_offline_mode', value);
+    if (mounted) setState(() => _offlineMode = value);
+  }
+
+  Future<void> _setQuality(String? value) async {
+    if (value == null) return;
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('settings_image_quality', value);
+    if (mounted) setState(() => _quality = value);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,17 +70,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
             SettingToggleTile(
               icon: Icons.folder,
               title: 'Guardar fotos originales',
-              description: 'Guarda una copia de la foto en la galeria despues de analizarla',
+              description: 'Conserva una copia interna de la imagen al guardar el historial',
               value: _saveOriginals,
-              onChanged: (value) => setState(() => _saveOriginals = value),
+              onChanged: _setSaveOriginals,
             ),
             const SectionHeader(title: 'Conectividad'),
             SettingToggleTile(
               icon: Icons.cloud_off,
               title: 'Modo offline estricto',
-              description: 'Desactiva intentos de conexion para ahorrar bateria',
+              description: 'Usa solo el modelo local y no llama al backend',
               value: _offlineMode,
-              onChanged: (value) => setState(() => _offlineMode = value),
+              onChanged: _setOfflineMode,
             ),
             const SectionHeader(title: 'Procesamiento'),
             SettingDropdownTile(
@@ -51,7 +89,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               description: 'Mayor calidad mejora la precision, pero tarda mas',
               value: _quality,
               items: const ['Alta', 'Media', 'Baja'],
-              onChanged: (value) => setState(() => _quality = value ?? _quality),
+              onChanged: _setQuality,
             ),
           ],
         ),

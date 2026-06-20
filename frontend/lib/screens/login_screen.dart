@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../routes.dart';
+import '../services/auth_service.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/app_button.dart';
@@ -19,6 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -40,6 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
               hintText: 'Email',
               prefixIcon: Icons.email,
               controller: _emailController,
+              keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 14),
             AppTextField(
@@ -55,8 +59,8 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             const SizedBox(height: 22),
             AppButton.primary(
-              label: 'Iniciar sesion',
-              onPressed: () => Navigator.of(context).pushReplacementNamed(AppRoutes.home),
+              label: _isLoading ? 'Ingresando...' : 'Iniciar sesion',
+              onPressed: _handleLogin,
             ),
             const SizedBox(height: 12),
             AppButton.secondary(
@@ -78,13 +82,55 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Analiza la calidad del cacao al instante',
+              'Analiza el estado del cacao al instante',
               style: AppTextStyles.titleMedium,
               textAlign: TextAlign.center,
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _handleLogin() async {
+    if (_isLoading) return;
+
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      _showMessage('Completa correo y contrasena');
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      final response = await AuthService.login(email: email, password: password);
+      final token = response['token']?.toString();
+      final usuario = response['usuario'] as Map<String, dynamic>?;
+
+      if (token != null) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('auth_token', token);
+        if (usuario != null) {
+          await prefs.setString('user_email', usuario['correo']?.toString() ?? '');
+          await prefs.setString('user_name', usuario['nombre']?.toString() ?? '');
+        }
+      }
+
+      if (!mounted) return;
+      Navigator.of(context).pushReplacementNamed(AppRoutes.home);
+    } catch (e) {
+      _showMessage(e.toString().replaceFirst('Exception: ', ''));
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
     );
   }
 }

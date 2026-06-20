@@ -3,22 +3,20 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 
 class AppLogo extends StatelessWidget {
-  const AppLogo({super.key, this.size = 90});
+  const AppLogo({super.key, this.size = 120});
 
   final double size;
 
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
+        Image.asset(
+          'assets/images/logo.png',
           width: size,
           height: size,
-          decoration: BoxDecoration(
-            color: AppColors.brown,
-            borderRadius: BorderRadius.circular(size / 2),
-          ),
-          child: const Icon(Icons.camera, color: AppColors.white, size: 44),
+          fit: BoxFit.contain,
         ),
         const SizedBox(height: 8),
         RichText(
