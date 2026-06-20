@@ -16,9 +16,9 @@ input_details = None
 output_details = None
 
 # Clases del modelo
-CLASES_CACAO = [
-    "Pod Borer",       
+CLASES_CACAO = [  
     "Pudrición Negra",
+    "Pod Borer",
     "Saludable"        
 ]
 
