@@ -4,12 +4,22 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ApiConfig {
   static String get baseUrl {
-    final configured = dotenv.env['API_BASE_URL']?.trim();
+    const definedUrl = String.fromEnvironment('API_BASE_URL');
+    final configured = definedUrl.trim().isNotEmpty
+        ? definedUrl.trim()
+        : dotenv.env['API_BASE_URL']?.trim();
     final rawUrl = (configured != null && configured.isNotEmpty)
         ? configured
         : 'http://localhost:3000/api';
 
     if (!Platform.isAndroid) {
+      return rawUrl;
+    }
+
+    const useAndroidEmulatorHost = bool.fromEnvironment(
+      'USE_ANDROID_EMULATOR_HOST',
+    );
+    if (!useAndroidEmulatorHost) {
       return rawUrl;
     }
 
