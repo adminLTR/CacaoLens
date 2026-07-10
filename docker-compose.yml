@@ -1,25 +1,19 @@
-version: '3.8'
-
 services:
-  # PostgreSQL Database
+  # PostgreSQL Database (usa las credenciales de backend/backend/.env)
   postgres:
     image: postgres:15-alpine
     container_name: cacaolens-postgres
     restart: unless-stopped
     env_file:
-      - ./backend/.env
-    environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
+      - ./backend/backend/.env
     ports:
-      - "${DB_PORT}:5432"
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - cacaolens-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U root -d ${DB_NAME}"]
+      test: ["CMD-SHELL", "pg_isready -U root -d cacaolens"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -34,7 +28,7 @@ services:
     env_file:
       - ./backend/backend/.env
     ports:
-      - "${BACKEND_PORT}:3000"
+      - "3000:3000"
     volumes:
       - ./backend/backend:/app
       - /app/node_modules
@@ -57,11 +51,9 @@ services:
     env_file:
       - ./backend/ML-service/.env
     ports:
-      - "${ML_PORT}:8000"
+      - "8000:8000"
     volumes:
       - ./backend/ML-service:/app
-      - ml_models:/app/models
-      - ml_data:/app/data
     networks:
       - cacaolens-network
 
@@ -70,11 +62,6 @@ volumes:
     driver: local
   backend_uploads:
     driver: local
-  ml_models:
-    driver: local
-  ml_data:
-    driver: local
-
 networks:
   cacaolens-network:
     driver: bridge
