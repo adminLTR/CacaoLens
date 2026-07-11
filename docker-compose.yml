@@ -54,6 +54,8 @@ services:
       - "8000:8000"
     volumes:
       - ./backend/ML-service:/app
+      - ./backend/ML-service/models:/app/models
+      - ml_data:/app/data
     networks:
       - cacaolens-network
 
@@ -62,6 +64,9 @@ volumes:
     driver: local
   backend_uploads:
     driver: local
+  ml_data:
+    driver: local
+
 networks:
   cacaolens-network:
     driver: bridge

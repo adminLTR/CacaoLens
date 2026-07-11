@@ -25,6 +25,8 @@ Thumbs.db
 *.keras
 *.tflite
 *.h5
+!ML-service/models/Cacao_InceptionV3_best.keras
+!ML-service/models/Cacao_InceptionV3_best.tflite
 
 .jpg
 *.jpeg

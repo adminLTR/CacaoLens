@@ -40,3 +40,5 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+
+module.exports = {};
