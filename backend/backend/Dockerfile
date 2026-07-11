@@ -11,8 +11,8 @@ COPY prisma ./prisma/
 
 # Copy application files
 COPY . .
-RUN chmod +x entrypoint.sh && mkdir -p uploads
+RUN chmod +x entrypoint.sh startup.sh && mkdir -p uploads
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "DB_HOST=${DB_HOST:-mysql}; DB_PORT=${DB_PORT:-3306}; echo 'Starting CacaoLens Backend...' && echo '================================' && echo \"Waiting for MySQL at $DB_HOST:$DB_PORT to be ready...\" && until nc -z \"$DB_HOST\" \"$DB_PORT\"; do echo '   MySQL is unavailable - sleeping'; sleep 2; done && echo 'MySQL is ready!' && echo 'Generating Prisma Client...' && npx prisma generate && echo 'Syncing database schema...' && npx prisma db push --accept-data-loss && echo 'Running database seeders...' && npm run seed && echo 'Database setup complete!' && echo 'Starting application...' && echo '================================' && exec npm start"]
+CMD ["./startup.sh"]
