@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 
+import 'diagnosis.dart';
+
 class HistoryItem {
   final String id;
   final String imagePath;
@@ -16,13 +18,9 @@ class HistoryItem {
     required this.date,
   });
 
-  Color get statusColor {
-    final normalized = status.toUpperCase();
-    if (normalized.contains('PUDRIC') || normalized.contains('BORER')) {
-      return Colors.redAccent;
-    }
-    return Colors.green;
-  }
+  DiagnosisCategory get diagnosisCategory => DiagnosisCategoryX.fromLabel(status);
+
+  Color get statusColor => diagnosisCategory.color;
 
   String get dateFormatted {
     return "${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}";

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../providers/analysis_provider.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/app_scaffold.dart';
 import '../widgets/section_header.dart';
@@ -44,7 +46,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _setOfflineMode(bool value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('settings_offline_mode', value);
-    if (mounted) setState(() => _offlineMode = value);
+    if (!mounted) return;
+    setState(() => _offlineMode = value);
+
+    if (value && !context.read<AnalysisProvider>().isLocalModelReady) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'El modelo local no está disponible en este dispositivo; el análisis offline podría fallar.',
+          ),
+        ),
+      );
+    }
   }
 
   Future<void> _setQuality(String? value) async {

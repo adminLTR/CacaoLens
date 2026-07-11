@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:camera/camera.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../routes.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/app_scaffold.dart';
+import '../widgets/flow_stepper.dart';
 
 class CameraScreen extends StatefulWidget {
   const CameraScreen({super.key});
@@ -23,6 +25,28 @@ class _CameraScreenState extends State<CameraScreen> {
   void initState() {
     super.initState();
     _initCamera();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _maybeShowOnboarding());
+  }
+
+  Future<void> _maybeShowOnboarding() async {
+    final prefs = await SharedPreferences.getInstance();
+    final seen = prefs.getBool('onboarding_camera_seen') ?? false;
+    if (seen || !mounted) return;
+
+    await showModalBottomSheet(
+      context: context,
+      isDismissible: true,
+      backgroundColor: AppColors.cream,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) => _OnboardingSheet(
+        onDone: () async {
+          await prefs.setBool('onboarding_camera_seen', true);
+          if (context.mounted) Navigator.of(context).pop();
+        },
+      ),
+    );
   }
 
   Future<void> _initCamera() async {
@@ -78,6 +102,7 @@ class _CameraScreenState extends State<CameraScreen> {
       title: const Text('CacaoLens'),
       body: Column(
         children: [
+          const FlowStepper(currentStep: 1),
           Expanded(
             child: Stack(
               children: [
@@ -159,6 +184,75 @@ class _CameraScreenState extends State<CameraScreen> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _OnboardingSheet extends StatelessWidget {
+  const _OnboardingSheet({required this.onDone});
+
+  final VoidCallback onDone;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 20, 24, 28),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Antes de tomar la foto', style: AppTextStyles.titleMedium),
+            const SizedBox(height: 16),
+            const _OnboardingTip(
+              icon: Icons.wb_sunny,
+              text: 'Busca buena iluminación, de preferencia luz natural.',
+            ),
+            const SizedBox(height: 12),
+            const _OnboardingTip(
+              icon: Icons.center_focus_strong,
+              text: 'Enfoca bien la vaina de cacao antes de capturar.',
+            ),
+            const SizedBox(height: 12),
+            const _OnboardingTip(
+              icon: Icons.zoom_in,
+              text: 'Acércate lo suficiente para que la vaina llene el encuadre.',
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.green,
+                  foregroundColor: AppColors.white,
+                  shape: const StadiumBorder(),
+                ),
+                onPressed: onDone,
+                child: const Text('Entendido'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _OnboardingTip extends StatelessWidget {
+  const _OnboardingTip({required this.icon, required this.text});
+
+  final IconData icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, color: AppColors.green),
+        const SizedBox(width: 12),
+        Expanded(child: Text(text, style: AppTextStyles.body)),
+      ],
     );
   }
 }

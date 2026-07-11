@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../routes.dart';
 import '../services/auth_service.dart';
 import '../theme/app_text_styles.dart';
+import '../utils/error_messages.dart';
+import '../utils/responsive.dart';
 import '../widgets/app_button.dart';
 import '../widgets/app_logo.dart';
 import '../widgets/app_scaffold.dart';
@@ -41,10 +43,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final compact = isCompact(context);
+
     return AppScaffold(
       showBack: true,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 32),
+        padding: EdgeInsets.symmetric(horizontal: compact ? 18 : 28, vertical: 32),
         child: Column(
           children: [
             const AppLogo(size: 80),
@@ -162,7 +166,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _showMessage('Cuenta creada, inicia sesion');
       Navigator.of(context).pushReplacementNamed(AppRoutes.login);
     } catch (e) {
-      _showMessage(e.toString().replaceFirst('Exception: ', ''));
+      _showMessage(friendlyMessage(e));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }

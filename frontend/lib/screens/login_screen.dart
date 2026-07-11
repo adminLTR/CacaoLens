@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../providers/session_provider.dart';
 import '../routes.dart';
 import '../services/auth_service.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
+import '../utils/error_messages.dart';
+import '../utils/responsive.dart';
 import '../widgets/app_button.dart';
 import '../widgets/app_logo.dart';
 import '../widgets/app_scaffold.dart';
@@ -32,9 +36,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final compact = isCompact(context);
+
     return AppScaffold(
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 40),
+        padding: EdgeInsets.symmetric(horizontal: compact ? 18 : 28, vertical: 40),
         child: Column(
           children: [
             const AppLogo(),
@@ -70,7 +76,12 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(height: 12),
             AppButton.neutral(
               label: 'Entrar como invitado',
-              onPressed: () => Navigator.of(context).pushReplacementNamed(AppRoutes.home),
+              onPressed: () async {
+                await context.read<SessionProvider>().refresh();
+                if (context.mounted) {
+                  Navigator.of(context).pushReplacementNamed(AppRoutes.home);
+                }
+              },
             ),
             const SizedBox(height: 16),
             TextButton(
@@ -120,9 +131,12 @@ class _LoginScreenState extends State<LoginScreen> {
       }
 
       if (!mounted) return;
+      await context.read<SessionProvider>().refresh();
+
+      if (!mounted) return;
       Navigator.of(context).pushReplacementNamed(AppRoutes.home);
     } catch (e) {
-      _showMessage(e.toString().replaceFirst('Exception: ', ''));
+      _showMessage(friendlyMessage(e));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }

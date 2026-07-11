@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../providers/session_provider.dart';
 import '../routes.dart';
 import '../services/auth_service.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
+import '../utils/error_messages.dart';
 import '../widgets/app_button.dart';
 import '../widgets/app_scaffold.dart';
 import '../widgets/app_text_field.dart';
@@ -110,7 +113,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       _showMessage('Perfil actualizado');
     } catch (e) {
-      _showMessage(e.toString().replaceFirst('Exception: ', ''));
+      _showMessage(friendlyMessage(e));
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
@@ -119,6 +122,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _handleLogout() async {
     if (_isLoggingOut) return;
 
+    final sessionProvider = context.read<SessionProvider>();
     setState(() => _isLoggingOut = true);
 
     final prefs = await SharedPreferences.getInstance();
@@ -131,9 +135,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } catch (e) {
       debugPrint('Error cerrando sesion en backend: $e');
     } finally {
-      await prefs.remove('auth_token');
-      await prefs.remove('user_email');
-      await prefs.remove('user_name');
+      await sessionProvider.clear();
       await prefs.remove('user_last_name');
       await prefs.remove('user_birthdate');
 
@@ -182,10 +184,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isGuest = context.watch<SessionProvider>().isGuest;
+
     return AppScaffold(
       showMenu: true,
       title: const Text('Mi Perfil'),
-      body: SingleChildScrollView(
+      body: isGuest ? _GuestProfileState(onLogin: () {
+              Navigator.of(context).pushNamedAndRemoveUntil(AppRoutes.login, (route) => false);
+            }) : _buildAccountForm(context),
+    );
+  }
+
+  Widget _buildAccountForm(BuildContext context) {
+    return SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
         child: Column(
           children: [
@@ -288,6 +299,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
               label: _isLoggingOut ? 'Cerrando...' : 'Cerrar sesion',
               onPressed: _isLoggingOut ? null : _handleLogout,
             ),
+          ],
+        ),
+      );
+  }
+}
+
+class _GuestProfileState extends StatelessWidget {
+  const _GuestProfileState({required this.onLogin});
+
+  final VoidCallback onLogin;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.person_outline, size: 72, color: AppColors.grayDark),
+            const SizedBox(height: 16),
+            Text('Estás en modo invitado', style: AppTextStyles.titleMedium, textAlign: TextAlign.center),
+            const SizedBox(height: 8),
+            Text(
+              'Inicia sesión para ver y actualizar los datos de tu cuenta. En modo invitado el '
+              'historial se guarda solo en este dispositivo.',
+              style: AppTextStyles.body,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            AppButton.primary(label: 'Iniciar sesión', onPressed: onLogin),
           ],
         ),
       ),

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import 'providers/history_provider.dart';
 import 'providers/analysis_provider.dart';
+import 'providers/session_provider.dart';
 import 'routes.dart';
 import 'screens/camera_screen.dart';
 import 'screens/history_screen.dart';
@@ -26,6 +27,7 @@ Future<void> main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => AnalysisProvider()),
         ChangeNotifierProvider(create: (_) => HistoryProvider()),
+        ChangeNotifierProvider(create: (_) => SessionProvider()..refresh()),
       ],
       child: const CacaoLensApp(),
     ),

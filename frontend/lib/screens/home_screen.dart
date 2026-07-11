@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../models/history_item.dart';
+import '../providers/history_provider.dart';
 import '../routes.dart';
+import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
+import '../utils/responsive.dart';
 import '../widgets/app_button.dart';
 import '../widgets/app_logo.dart';
 import '../widgets/app_scaffold.dart';
+import '../widgets/history_item_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -40,6 +46,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final history = context.watch<HistoryProvider>().history;
+    final HistoryItem? lastItem = history.isNotEmpty ? history.first : null;
+    final compact = isCompact(context);
+
     return AppScaffold(
       showMenu: true,
       title: const Text('CacaoLens'),
@@ -57,20 +67,63 @@ class _HomeScreenState extends State<HomeScreen> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
-            AppButton.primary(
-              label: 'Usar camara',
-              onPressed: () => Navigator.of(context).pushNamed(AppRoutes.camera),
+            _MainActions(compact: compact),
+            const SizedBox(height: 28),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text('Último análisis', style: AppTextStyles.titleMedium),
             ),
             const SizedBox(height: 12),
-            AppButton.secondary(
-              label: 'Abrir galeria',
-              onPressed: () => _pickFromGallery(context),
-            ),
+            lastItem != null
+                ? InkWell(
+                    borderRadius: BorderRadius.circular(16),
+                    onTap: () => Navigator.of(context).pushNamed(AppRoutes.history),
+                    child: HistoryItemCard(item: lastItem),
+                  )
+                : Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: AppColors.grayLight,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Column(
+                      children: [
+                        const Icon(Icons.image_search, size: 40, color: AppColors.grayDark),
+                        const SizedBox(height: 10),
+                        Text(
+                          'Aún no tienes análisis guardados.',
+                          style: AppTextStyles.body,
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '¡Prueba tu primera foto!',
+                          style: AppTextStyles.body.copyWith(color: AppColors.green),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+            if (lastItem != null)
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () => Navigator.of(context).pushNamed(AppRoutes.history),
+                  child: const Text('Ver todo el historial'),
+                ),
+              ),
           ],
         ),
       ),
     );
   }
+}
+
+class _MainActions extends StatelessWidget {
+  const _MainActions({required this.compact});
+
+  final bool compact;
 
   Future<void> _pickFromGallery(BuildContext context) async {
     final picker = ImagePicker();
@@ -79,5 +132,35 @@ class _HomeScreenState extends State<HomeScreen> {
     if (image != null && context.mounted) {
       Navigator.of(context).pushNamed(AppRoutes.preview, arguments: image.path);
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final takePhoto = AppButton.primary(
+      label: 'Tomar foto',
+      onPressed: () => Navigator.of(context).pushNamed(AppRoutes.camera),
+    );
+    final uploadImage = AppButton.secondary(
+      label: 'Subir imagen',
+      onPressed: () => _pickFromGallery(context),
+    );
+
+    if (compact) {
+      return Column(
+        children: [
+          takePhoto,
+          const SizedBox(height: 12),
+          uploadImage,
+        ],
+      );
+    }
+
+    return Row(
+      children: [
+        Expanded(child: takePhoto),
+        const SizedBox(width: 12),
+        Expanded(child: uploadImage),
+      ],
+    );
   }
 }

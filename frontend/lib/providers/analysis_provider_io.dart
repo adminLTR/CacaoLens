@@ -10,12 +10,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 
 import '../config/api_config.dart';
+import '../models/analysis_result.dart';
 
 class AnalysisProvider extends ChangeNotifier {
   File? _selectedImage;
   String _result = 'Esperando imagen...';
   bool _isLoading = false;
   Interpreter? _interpreter;
+  AnalysisStage _stage = AnalysisStage.idle;
+  AnalysisResult? _analysisResult;
 
   final List<String> _labels = ['Saludable', 'Pudrición Negra', 'Pod Borer'];
 
@@ -23,6 +26,9 @@ class AnalysisProvider extends ChangeNotifier {
   String? get selectedImagePath => _selectedImage?.path;
   String get result => _result;
   bool get isLoading => _isLoading;
+  AnalysisStage get stage => _stage;
+  AnalysisResult? get analysisResult => _analysisResult;
+  bool get isLocalModelReady => _interpreter != null;
 
   AnalysisProvider() {
     _loadModel();
@@ -32,6 +38,7 @@ class AnalysisProvider extends ChangeNotifier {
     try {
       _interpreter = await Interpreter.fromAsset('assets/models/Cacao_InceptionV3_best.tflite');
       debugPrint('Modelo TFLite cargado correctamente');
+      notifyListeners();
     } catch (e) {
       debugPrint('Modelo TFLite local no disponible: $e');
     }
@@ -96,6 +103,8 @@ class AnalysisProvider extends ChangeNotifier {
     if (_selectedImage == null) return;
 
     _isLoading = true;
+    _analysisResult = null;
+    _stage = AnalysisStage.uploading;
     notifyListeners();
 
     final connectivityResult = await Connectivity().checkConnectivity();
@@ -109,7 +118,8 @@ class AnalysisProvider extends ChangeNotifier {
       debugPrint('Conexion detectada. Enviando a la API...');
       await _callBackendAPI();
     }
-    
+
+    _stage = _analysisResult != null ? AnalysisStage.done : AnalysisStage.error;
     _isLoading = false;
     notifyListeners();
   }
@@ -122,6 +132,9 @@ class AnalysisProvider extends ChangeNotifier {
 
     try {
       final imageBytes = await _selectedImage!.readAsBytes();
+      _stage = AnalysisStage.analyzing;
+      notifyListeners();
+
       final originalImage = img.decodeImage(imageBytes);
 
       if (originalImage == null) {
@@ -145,7 +158,17 @@ class AnalysisProvider extends ChangeNotifier {
         }
       }
 
-      _result = '${_labels[highestProbIndex]} (${(highestProb * 100).toStringAsFixed(1)}%)';
+      _stage = AnalysisStage.generatingResult;
+      notifyListeners();
+      await Future.delayed(const Duration(milliseconds: 400));
+
+      final label = _labels[highestProbIndex];
+      _analysisResult = AnalysisResult(
+        label: label,
+        confidence: highestProb.toDouble(),
+        fromLocalModel: true,
+      );
+      _result = '$label (${(highestProb * 100).toStringAsFixed(1)}%)';
     } catch (e) {
       debugPrint('Error en inferencia: $e');
       _result = 'Error al analizar imagen localmente';
@@ -191,6 +214,9 @@ class AnalysisProvider extends ChangeNotifier {
         await http.MultipartFile.fromPath('image', _selectedImage!.path),
       );
 
+      _stage = AnalysisStage.analyzing;
+      notifyListeners();
+
       final response = await request.send();
       final body = await response.stream.bytesToString();
       final payload = body.trim().isEmpty ? <String, dynamic>{} : jsonDecode(body) as Map<String, dynamic>;
@@ -206,6 +232,15 @@ class AnalysisProvider extends ChangeNotifier {
           'Resultado desconocido';
       final confidence = _readConfidence(prediction);
 
+      _stage = AnalysisStage.generatingResult;
+      notifyListeners();
+      await Future.delayed(const Duration(milliseconds: 400));
+
+      _analysisResult = AnalysisResult(
+        label: label,
+        confidence: confidence,
+        fromLocalModel: false,
+      );
       _result = '$label (${(confidence * 100).toStringAsFixed(1)}%)';
     } catch (e) {
       debugPrint('Error al llamar API: $e');
