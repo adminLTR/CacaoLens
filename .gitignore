@@ -60,7 +60,7 @@ frontend/.metadata
 # ========================================
 # Modelos entrenados (suelen ser muy pesados)
 *.h5
-# *.keras
+*.keras
 *.pb
 *.pth
 *.pt
@@ -79,7 +79,6 @@ backend/ML-service/models/*.tflite
 frontend/assets/models/*.tflite
 !ML/models/.gitkeep
 !backend/ML-service/models/.gitkeep
-!backend/ML-service/models/Cacao_InceptionV3_best.keras
 !backend/ML-service/models/Cacao_InceptionV3_best.tflite
 
 # Datos de entrenamiento (pueden ser pesados)
