@@ -25,16 +25,16 @@ ENV/
 # ========================================
 # Modelos ML - IMPORTANTE: No subir (muy pesados)
 # ========================================
-models/*.h5
-models/*.keras
-models/*.pb
-models/*.pth
-models/*.pt
-models/*.ckpt
-models/*.weights
-models/*.weights.h5
-models/*.tflite
-models/*.onnx
+# models/*.h5
+# models/*.keras
+# models/*.pb
+# models/*.pth
+# models/*.pt
+# models/*.ckpt
+# models/*.weights
+# models/*.weights.h5
+# models/*.tflite
+# models/*.onnx
 !models/.gitkeep
 !models/README.md
 
